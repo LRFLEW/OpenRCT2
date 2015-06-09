@@ -207,6 +207,23 @@ void climate_force_weather(uint8 weather){
 	gfx_invalidate_screen();
 }
 
+void climate_force_weather_smooth(uint8 weather){
+	sint8 climate = RCT2_GLOBAL(RCT2_ADDRESS_CLIMATE, sint8);
+	const rct_weather_transition* climate_table = climate_transitions[climate];
+	sint8 month = RCT2_GLOBAL(RCT2_ADDRESS_CURRENT_MONTH_YEAR, sint16) & 7;
+	rct_weather_transition transition = climate_table[month];
+
+	// Generate a random variable with values 0 upto distribution_size-1 and chose weather from the distribution table accordingly
+	gClimateNextWeather = weather;
+
+	_climateNextTemperature = transition.base_temperature + climate_weather_data[weather].temp_delta;
+	_climateNextWeatherEffect = climate_weather_data[weather].effect_level;
+	_climateNextWeatherGloom = climate_weather_data[weather].gloom_level;
+	_climateNextRainLevel = climate_weather_data[weather].rain_level;
+
+	RCT2_GLOBAL(RCT2_ADDRESS_CLIMATE_UPDATE_TIMER, sint16) = 0;
+}
+
 /**
  * Calculates future weather development.
  * RCT2 implements this as discrete probability distributions dependant on month and climate 

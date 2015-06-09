@@ -62,5 +62,6 @@ void climate_reset(int climate);
 void climate_update();
 void climate_update_sound();
 void climate_force_weather(uint8 weather);
+void climate_force_weather_smooth(uint8 weather);
 
 #endif

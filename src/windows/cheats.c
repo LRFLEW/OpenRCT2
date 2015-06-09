@@ -60,6 +60,7 @@ enum WINDOW_CHEATS_WIDGET_IDX {
 	WIDX_HAPPY_GUESTS = 8, //Same as HIGH_MONEY as it is also the 8th widget but on a different page
 	WIDX_TRAM_GUESTS,
 	WIDX_NAUSEA_GUESTS,
+	WIDX_ACID_GUESTS,
 	WIDX_FREEZE_CLIMATE = 8,
 	WIDX_OPEN_CLOSE_PARK,
 	WIDX_ZERO_CLEARANCE,
@@ -130,6 +131,7 @@ static rct_widget window_cheats_guests_widgets[] = {
 	{ WWT_CLOSEBOX,			1, XPL(0),	WPL(0),	YPL(1), HPL(1),		STR_CHEAT_HAPPY_GUESTS,			STR_NONE},					// happy guests
 	{ WWT_CLOSEBOX,			1, XPL(0),	WPL(0),	YPL(3), HPL(3),		STR_CHEAT_LARGE_TRAM_GUESTS,	STR_NONE},					// large tram
 	{ WWT_CLOSEBOX,			1, XPL(0),	WPL(0),	YPL(5), HPL(5),		STR_CHEAT_NAUSEA,				STR_NONE},					// nausea
+	{ WWT_CLOSEBOX,			1, XPL(0),	WPL(0), YPL(7), HPL(7),		STR_CHEAT_ACID,					STR_NONE},					// acid rain
 	{ WIDGETS_END },
 };
 
@@ -330,7 +332,7 @@ static void* window_cheats_page_events[] = {
 
 static uint32 window_cheats_page_enabled_widgets[] = {
 	(1 << WIDX_CLOSE) | (1 << WIDX_TAB_1) | (1 << WIDX_TAB_2) | (1 << WIDX_TAB_3) | (1 << WIDX_TAB_4) | (1 << WIDX_HIGH_MONEY) | (1 << WIDX_PARK_ENTRANCE_FEE),
-	(1 << WIDX_CLOSE) | (1 << WIDX_TAB_1) | (1 << WIDX_TAB_2) | (1 << WIDX_TAB_3) | (1 << WIDX_TAB_4) | (1 << WIDX_HAPPY_GUESTS) | (1 << WIDX_TRAM_GUESTS) | (1 << WIDX_NAUSEA_GUESTS),
+	(1 << WIDX_CLOSE) | (1 << WIDX_TAB_1) | (1 << WIDX_TAB_2) | (1 << WIDX_TAB_3) | (1 << WIDX_TAB_4) | (1 << WIDX_HAPPY_GUESTS) | (1 << WIDX_TRAM_GUESTS) | (1 << WIDX_NAUSEA_GUESTS) | (1 << WIDX_ACID_GUESTS),
 	(1 << WIDX_CLOSE) | (1 << WIDX_TAB_1) | (1 << WIDX_TAB_2) | (1 << WIDX_TAB_3) | (1 << WIDX_TAB_4) | (1 << WIDX_FREEZE_CLIMATE) | (1 << WIDX_OPEN_CLOSE_PARK) | (1 << WIDX_ZERO_CLEARANCE) | (1 << WIDX_WEATHER_SUN) | (1 << WIDX_WEATHER_THUNDER) | (1 << WIDX_CLEAR_GRASS) | (1 << WIDX_MOWED_GRASS) | (1 << WIDX_WATER_PLANTS) | (1 << WIDX_FIX_VANDALISM) | (1 << WIDX_REMOVE_LITTER) | (1 << WIDX_WIN_SCENARIO) | (1 << WIDX_UNLOCK_ALL_PRICES) | (1 << WIDX_INGAME_LAND_OWNERSHIP_EDITOR),
 	(1 << WIDX_CLOSE) | (1 << WIDX_TAB_1) | (1 << WIDX_TAB_2) | (1 << WIDX_TAB_3) | (1 << WIDX_TAB_4) | (1 << WIDX_RENEW_RIDES) | (1 << WIDX_REMOVE_SIX_FLAGS) | (1 << WIDX_MAKE_DESTRUCTIBLE) | (1 << WIDX_FIX_ALL) | (1 << WIDX_FAST_LIFT_HILL) | (1 << WIDX_DISABLE_BRAKES_FAILURE) | (1 << WIDX_DISABLE_ALL_BREAKDOWNS)
 };
@@ -521,6 +523,36 @@ static void cheat_make_guests_nauseous()
 		peep->flags |= PEEP_FLAGS_NAUSEA;
 }
 
+static void cheat_acid_rain()
+{
+	int spriteIndex;
+	rct_peep *peep;
+
+	//climate_force_weather_smooth(WEATHER_HEAVY_RAIN);
+
+	FOR_ALL_GUESTS(spriteIndex, peep) {
+		if (peep->var_2A != 0)
+			continue;
+
+		//if (peep->item_standard_flags & PEEP_ITEM_UMBRELLA)
+		//	continue;
+		
+		if ((peep->state == PEEP_STATE_WALKING || peep->state == PEEP_STATE_QUEUING) && peep->action >= 254) {
+			peep->state = PEEP_STATE_FALLING;
+			peep->action = PEEP_ACTION_DROWNING;
+			peep_insert_new_thought(peep, PEEP_THOUGHT_TYPE_DROWNING, -1);
+
+			peep->action_frame = 0;
+			peep->action_sprite_image_offset = 0;
+
+			sub_693B58(peep);
+			invalidate_sprite((rct_sprite*)peep);
+			peep_window_state_update(peep);
+		}
+	}
+
+}
+
 #pragma endregion
 
 void window_cheats_open()
@@ -592,6 +624,9 @@ static void window_cheats_guests_mouseup()
 		break;
 	case WIDX_NAUSEA_GUESTS:
 		cheat_make_guests_nauseous();
+		break;
+	case WIDX_ACID_GUESTS:
+		cheat_acid_rain();
 		break;
 	}
 }
@@ -778,6 +813,7 @@ static void window_cheats_paint()
 		gfx_draw_string_left(dpi, STR_CHEAT_TIP_HAPPY_GUESTS,		NULL,	0, w->x + XPL(0) + TXTO, w->y + YPL(0) + TXTO);
 		gfx_draw_string_left(dpi, STR_CHEAT_TIP_LARGE_TRAM_GUESTS,	NULL,	0, w->x + XPL(0) + TXTO, w->y + YPL(2) + TXTO);
 		gfx_draw_string_left(dpi, STR_CHEAT_TIP_NAUSEA,				NULL,	0, w->x + XPL(0) + TXTO, w->y + YPL(4) + TXTO);
+		gfx_draw_string_left(dpi, STR_CHEAT_TIP_ACID,				NULL,	0, w->x + XPL(0) + TXTO, w->y + YPL(6) + TXTO);
 	}
 }
 
