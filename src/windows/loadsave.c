@@ -182,13 +182,16 @@ rct_window *window_loadsave_open(int type, char *defaultName)
 	case (LOADSAVETYPE_LOAD | LOADSAVETYPE_TRACK) :
 		w->widgets[WIDX_TITLE].image = 1039;
 		break;
+	case (LOADSAVETYPE_LOAD | LOADSAVETYPE_MUSIC) :
+		w->widgets[WIDX_TITLE].image = STR_CHEAT_EXPLODE;
+		break;
 	}
 
 	w->no_list_items = 0;
 	w->selected_list_item = -1;
 
 	includeNewItem = (type & 1) == LOADSAVETYPE_SAVE;
-	switch (type & 6) {
+	switch (type & 0xE) {
 	case LOADSAVETYPE_GAME:
 		platform_get_user_directory(path, "save");
 		if (!platform_ensure_directory_exists(path)) {
@@ -246,6 +249,17 @@ rct_window *window_loadsave_open(int type, char *defaultName)
 			*ch = 0;
 
 		window_loadsave_populate_list(includeNewItem, TRUE, path, ".td?");
+		break;
+	case LOADSAVETYPE_MUSIC:
+		platform_get_user_directory(path, "mymusic");
+		if (!platform_ensure_directory_exists(path)) {
+			log_error("Unable to create mymusic directory.");
+			window_close(w);
+			return NULL;
+		}
+		printf("%s\n", path);
+
+		window_loadsave_populate_list(includeNewItem, TRUE, path, "");
 		break;
 	}
 	w->no_list_items = _listItemsCount;
@@ -714,6 +728,8 @@ static void window_loadsave_populate_list(int includeNewItem, bool browsable, co
 		sortStartIndex = _listItemsCount;
 		fileEnumHandle = platform_enumerate_files_begin(filter);
 		while (platform_enumerate_files_next(fileEnumHandle, &fileInfo)) {
+			if (fileInfo.path[0] == '.') continue;
+
 			if (listItemCapacity <= _listItemsCount) {
 				listItemCapacity *= 2;
 				_listItems = realloc(_listItems, listItemCapacity * sizeof(loadsave_list_item));
@@ -724,15 +740,9 @@ static void window_loadsave_populate_list(int includeNewItem, bool browsable, co
 			strncat(listItem->path, fileInfo.path, sizeof(listItem->path));
 			listItem->type = TYPE_FILE;
 			listItem->date_modified = platform_file_get_modified_time(listItem->path);
-
-			src = fileInfo.path;
-			dst = listItem->name;
-			i = 0;
-			while (*src != 0 && *src != '.' && i < sizeof(listItem->name) - 1) {
-				*dst++ = *src++;
-				i++;
-			}
-			*dst = 0;
+			
+			strncpy(listItem->name, fileInfo.path, sizeof(listItem->name));
+			path_remove_extension(listItem->name);
 
 			_listItemsCount++;
 		}

@@ -151,6 +151,7 @@ enum {
 	WIDX_PLAY_MUSIC = 14,
 	WIDX_MUSIC,
 	WIDX_MUSIC_DROPDOWN,
+	WIDX_MUSIC_CUSTOM,
 
 	WIDX_SAVE_TRACK_DESIGN = 14,
 	WIDX_SELECT_NEARBY_SCENERY,
@@ -372,6 +373,7 @@ static rct_widget window_ride_music_widgets[] = {
 	{ WWT_CHECKBOX,			1,	7,		308,	47,		58,		STR_PLAY_MUSIC,					STR_SELECT_MUSIC_TIP						},
 	{ WWT_DROPDOWN,			1,	7,		308,	62,		73,		0,								STR_NONE									},
 	{ WWT_DROPDOWN_BUTTON,	1,	297,	307,	63,		72,		876,							STR_SELECT_MUSIC_STYLE_TIP					},
+	{ WWT_DROPDOWN_BUTTON,	1,	7,		108,	78,		88,		STR_CHEAT_EXPLODE,				STR_CHEAT_TIP_EXPLODE									},
 	{ WIDGETS_END },
 };
 
@@ -497,7 +499,7 @@ const uint64 window_ride_page_enabled_widgets[] = {
 	0x0000019E777DBFF4,
 	0x000000000003FFF4,
 	0x00000003F37F3FF4,
-	0x000000000001FFF4,
+	0x000000000003FFF4,
 	0x000000000007FFF4,
 	0x000000000007BFF4,
 	0x0000000000E73FF4,
@@ -4510,6 +4512,9 @@ static void window_ride_music_mouseup()
 	case WIDX_PLAY_MUSIC:
 		window_ride_toggle_music(w);
 		break;
+	case WIDX_MUSIC_CUSTOM:
+		window_loadsave_open(LOADSAVETYPE_LOAD | LOADSAVETYPE_MUSIC, NULL);
+		break;
 	}
 }
 
@@ -4524,7 +4529,7 @@ static void window_ride_music_resize()
 	window_get_register(w);
 
 	w->flags |= WF_RESIZABLE;
-	window_set_resize(w, 316, 81, 316, 81);
+	window_set_resize(w, 316, 97, 316, 97);
 }
 
 /**
@@ -4643,10 +4648,12 @@ static void window_ride_music_invalidate()
 		w->pressed_widgets |= (1 << WIDX_PLAY_MUSIC);
 		w->disabled_widgets &= ~(1 << WIDX_MUSIC);
 		w->disabled_widgets &= ~(1 << WIDX_MUSIC_DROPDOWN);
+		w->disabled_widgets &= ~(1 << WIDX_MUSIC_CUSTOM);
 	} else {
 		w->pressed_widgets &= ~(1 << WIDX_PLAY_MUSIC);
 		w->disabled_widgets |= (1 << WIDX_MUSIC);
 		w->disabled_widgets |= (1 << WIDX_MUSIC_DROPDOWN);
+		w->disabled_widgets |= (1 << WIDX_MUSIC_CUSTOM);
 	}
 
 	window_ride_anchor_border_widgets(w);
