@@ -618,7 +618,8 @@ enum {
 	MUSIC_STYLE_MODERN,
 	MUSIC_STYLE_PIRATES,
 	MUSIC_STYLE_ROCK_STYLE_3,
-	MUSIC_STYLE_CANDY_STYLE
+	MUSIC_STYLE_CANDY_STYLE,
+	MUSIC_STYLE_OPENRCT_CUSTOM
 };
 
 enum {
@@ -809,7 +810,7 @@ extern rct_ride* g_ride_list;
 	for (i = 0; i < MAX_RIDES; i++) \
 		if ((ride = &g_ride_list[i])->type != RIDE_TYPE_NULL)
 
-extern const uint8 gRideClassifications[255];
+extern const uint8 gRideClassifications[MAX_RIDES];
 
 
 // Macros for very commonly used varaibles, eventually will be changed to locals or globals

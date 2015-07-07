@@ -81,6 +81,7 @@
     <ClCompile Include="..\src\platform\windows.c" />
     <ClCompile Include="..\src\rct1.c" />
     <ClCompile Include="..\src\rct2.c" />
+    <ClCompile Include="..\src\ride\custom_music.c" />
     <ClCompile Include="..\src\ride\ride.c" />
     <ClCompile Include="..\src\ride\ride_data.c" />
     <ClCompile Include="..\src\ride\ride_ratings.c" />
@@ -230,6 +231,7 @@
     <ClInclude Include="..\src\platform\platform.h" />
     <ClInclude Include="..\src\rct1.h" />
     <ClInclude Include="..\src\rct2.h" />
+    <ClInclude Include="..\src\ride\custom_music.h" />
     <ClInclude Include="..\src\ride\ride.h" />
     <ClInclude Include="..\src\ride\ride_data.h" />
     <ClInclude Include="..\src\ride\ride_ratings.h" />

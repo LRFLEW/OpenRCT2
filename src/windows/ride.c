@@ -373,7 +373,7 @@ static rct_widget window_ride_music_widgets[] = {
 	{ WWT_CHECKBOX,			1,	7,		308,	47,		58,		STR_PLAY_MUSIC,					STR_SELECT_MUSIC_TIP						},
 	{ WWT_DROPDOWN,			1,	7,		308,	62,		73,		0,								STR_NONE									},
 	{ WWT_DROPDOWN_BUTTON,	1,	297,	307,	63,		72,		876,							STR_SELECT_MUSIC_STYLE_TIP					},
-	{ WWT_DROPDOWN_BUTTON,	1,	7,		108,	78,		88,		STR_CHEAT_EXPLODE,				STR_CHEAT_TIP_EXPLODE									},
+	{ WWT_DROPDOWN_BUTTON,	1,	7,		99,		78,		90,		STR_CHEAT_EXPLODE,				STR_CHEAT_TIP_EXPLODE									},
 	{ WIDGETS_END },
 };
 
@@ -4513,7 +4513,7 @@ static void window_ride_music_mouseup()
 		window_ride_toggle_music(w);
 		break;
 	case WIDX_MUSIC_CUSTOM:
-		window_loadsave_open(LOADSAVETYPE_LOAD | LOADSAVETYPE_MUSIC, NULL);
+		window_loadsave_open(LOADSAVETYPE_LOAD | LOADSAVETYPE_MUSIC | (w->number << 16), NULL);
 		break;
 	}
 }

@@ -32,6 +32,7 @@
 #include "../interface/themes.h"
 #include "../interface/title_sequences.h"
 #include "../util/util.h"
+#include "../ride/custom_music.h"
 
 #pragma region Widgets
 
@@ -163,7 +164,7 @@ rct_window *window_loadsave_open(int type, char *defaultName)
 	}
 
 	_loadsaveType = type;
-	switch (type) {
+	switch (type & 0xFFFF) {
 	case (LOADSAVETYPE_LOAD | LOADSAVETYPE_GAME):
 		w->widgets[WIDX_TITLE].image = STR_LOAD_GAME;
 		break;
@@ -191,7 +192,7 @@ rct_window *window_loadsave_open(int type, char *defaultName)
 	w->selected_list_item = -1;
 
 	includeNewItem = (type & 1) == LOADSAVETYPE_SAVE;
-	switch (type & 0xE) {
+	switch (type & 0xFFFE) {
 	case LOADSAVETYPE_GAME:
 		platform_get_user_directory(path, "save");
 		if (!platform_ensure_directory_exists(path)) {
@@ -251,13 +252,12 @@ rct_window *window_loadsave_open(int type, char *defaultName)
 		window_loadsave_populate_list(includeNewItem, TRUE, path, ".td?");
 		break;
 	case LOADSAVETYPE_MUSIC:
-		platform_get_user_directory(path, "mymusic");
+		platform_get_user_directory(path, "music");
 		if (!platform_ensure_directory_exists(path)) {
 			log_error("Unable to create mymusic directory.");
 			window_close(w);
 			return NULL;
 		}
-		printf("%s\n", path);
 
 		window_loadsave_populate_list(includeNewItem, TRUE, path, "");
 		break;
@@ -299,7 +299,7 @@ static void window_loadsave_mouseup()
 		strncpy(filter, "*", MAX_PATH);
 		strncat(filter, _extension, MAX_PATH);
 
-		switch (_type) {
+		switch (_type & 0xFFFF) {
 		case (LOADSAVETYPE_LOAD | LOADSAVETYPE_GAME) :
 			result = platform_open_common_file_dialog(1, (char*)language_get_string(STR_LOAD_GAME), filename, filter, _extension);
 			break;
@@ -317,6 +317,9 @@ static void window_loadsave_mouseup()
 			break;
 		case (LOADSAVETYPE_LOAD | LOADSAVETYPE_TRACK) :
 			result = platform_open_common_file_dialog(1, (char*)language_get_string(1039), filename, filter, _extension);
+			break;
+		case (LOADSAVETYPE_LOAD | LOADSAVETYPE_MUSIC) :
+			result = platform_open_common_file_dialog(1, (char*)language_get_string(STR_CHEAT_EXPLODE), filename, filter, _extension);
 			break;
 		}
 
@@ -639,11 +642,10 @@ static void window_loadsave_sort_list(int index, int endIndex)
 
 static void window_loadsave_populate_list(int includeNewItem, bool browsable, const char *directory, const char *extension)
 {
-	int i, listItemCapacity, fileEnumHandle;
+	int listItemCapacity, fileEnumHandle;
 	file_info fileInfo;
 	loadsave_list_item *listItem;
-	const char *src;
-	char *dst, filter[MAX_PATH], subDir[MAX_PATH];
+	char filter[MAX_PATH], subDir[MAX_PATH];
 
 	strncpy(_directory, directory, sizeof(_directory));
 	strncpy(_extension, extension, sizeof(_extension));
@@ -772,7 +774,7 @@ static void window_loadsave_populate_list(int includeNewItem, bool browsable, co
 
 static void window_loadsave_select(rct_window *w, const char *path)
 {
-	switch (_loadsaveType) {
+	switch (_loadsaveType & 0xFFFF) {
 	case (LOADSAVETYPE_LOAD | LOADSAVETYPE_GAME) :
 			if (gLoadSaveTitleSequenceSave) {
 				utf8 newName[MAX_PATH];
@@ -853,6 +855,10 @@ static void window_loadsave_select(rct_window *w, const char *path)
 			window_install_track_open(path);
 			window_close_by_class(WC_LOADSAVE);
 			break;
+		case (LOADSAVETYPE_LOAD | LOADSAVETYPE_MUSIC) :
+			uint8 song_id = custom_music_add(path);
+			custom_music_set_ride(_loadsaveType >> 16, song_id);
+			window_close(w);
 		}
 }
 
