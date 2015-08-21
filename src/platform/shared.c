@@ -63,6 +63,7 @@ static SDL_Surface *_surface;
 static SDL_Palette *_palette;
 
 static void *_screenBuffer;
+void *gUiBuffer;
 static int _screenBufferSize;
 static int _screenBufferWidth;
 static int _screenBufferHeight;
@@ -887,7 +888,34 @@ static void platform_refresh_screenbuffer(int width, int height, int pitch)
 		free(_screenBuffer);
 	}
 
+	char *newUiBuffer = (char*)malloc(newScreenBufferSize);
+	if (gUiBuffer == NULL) {
+		memset(newUiBuffer, 255, newScreenBufferSize);
+	}
+	else {
+		if (_screenBufferPitch == pitch) {
+			memcpy(newUiBuffer, gUiBuffer, min(_screenBufferSize, newScreenBufferSize));
+		}
+		else {
+			char *src = gUiBuffer;
+			char *dst = newUiBuffer;
+
+			int minWidth = min(_screenBufferWidth, width);
+			int minHeight = min(_screenBufferHeight, height);
+			for (int y = 0; y < minHeight; y++) {
+				memcpy(dst, src, minWidth);
+				if (pitch - minWidth > 0)
+					memset(dst + minWidth, 255, pitch - minWidth);
+
+				src += _screenBufferPitch;
+				dst += pitch;
+			}
+		}
+		free(gUiBuffer);
+	}
+
 	_screenBuffer = newScreenBuffer;
+	gUiBuffer = newUiBuffer;
 	_screenBufferSize = newScreenBufferSize;
 	_screenBufferWidth = width;
 	_screenBufferHeight = height;

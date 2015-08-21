@@ -1740,6 +1740,7 @@ static void window_park_objective_paint(rct_window *w, rct_drawpixelinfo *dpi)
 	int x, y;
 	
 	window_draw_widgets(w, dpi);
+	/*
 	window_park_draw_tab_images(dpi, w);
 
 	// Scenario description
@@ -1773,6 +1774,7 @@ static void window_park_objective_paint(rct_window *w, rct_drawpixelinfo *dpi)
 			gfx_draw_string_left_wrapped(dpi, (void*)0x013CE952, x, y, 222, 2788, 0);
 		}
 	}
+	*/
 }
 
 #pragma endregion

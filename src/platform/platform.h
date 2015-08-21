@@ -74,6 +74,7 @@ extern int gResolutionsAllowAnyAspectRatio;
 extern int gNumResolutions;
 extern resolution *gResolutions;
 extern SDL_Window *gWindow;
+extern void *gUiBuffer;
 
 // Platform shared definitions
 void platform_update_fullscreen_resolutions();
