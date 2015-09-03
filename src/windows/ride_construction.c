@@ -492,7 +492,7 @@ static int ride_get_alternative_type(rct_ride *ride)
 {
 	return _currentTrackCovered & 2 ?
 		RCT2_ADDRESS(0x0097D4F5, uint8)[ride->type * 8] :
-		ride->type;;
+		ride->type;
 }
 
 /**
@@ -1030,6 +1030,11 @@ static void window_ride_construction_resize(rct_window *w)
 			if (w->widgets[WIDX_SLOPE_UP_STEEP].tooltip == STR_RIDE_CONSTRUCTION_STEEP_SLOPE_UP_TIP) {
 				disabledWidgets |= (1ULL << WIDX_SLOPE_UP_STEEP);
 			}
+		}
+	}
+	if (!is_track_enabled(TRACK_LIFT_HILL_STEEP)) {
+		if (_previousTrackSlopeEnd == TRACK_SLOPE_UP_60 || _currentTrackSlopeEnd == TRACK_SLOPE_UP_60) {
+			disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
 		}
 	}
 	if (_previousTrackSlopeEnd == TRACK_SLOPE_UP_60 && _currentTrackCurve != TRACK_CURVE_NONE) {
