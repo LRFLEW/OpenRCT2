@@ -1368,7 +1368,9 @@ void ride_construction_set_default_next_piece()
 		// Set track slope and lift hill
 		_currentTrackSlopeEnd = slope;
 		_previousTrackSlopeEnd = slope;
-		_currentTrackLiftHill = ((mapElement->type & 0x80) && slope != TRACK_SLOPE_DOWN_25 && slope != TRACK_SLOPE_DOWN_60) != 0;
+		if (!CHAIN_LIFT_CHEAT) {
+			_currentTrackLiftHill = ((mapElement->type & 0x80) && slope != TRACK_SLOPE_DOWN_25 && slope != TRACK_SLOPE_DOWN_60) != 0;
+		}
 		break;
 	case RIDE_CONSTRUCTION_STATE_BACK:
 		rideIndex = _currentRideIndex;
@@ -1420,7 +1422,7 @@ void ride_construction_set_default_next_piece()
 		// Set track slope and lift hill
 		_currentTrackSlopeEnd = slope;
 		_previousTrackSlopeEnd = slope;
-		_currentTrackLiftHill = (mapElement->type & 0x80) != 0;
+		if (!CHAIN_LIFT_CHEAT) _currentTrackLiftHill = (mapElement->type & 0x80) != 0;
 		break;
 	}
 }
@@ -1734,7 +1736,7 @@ int sub_6CC3FB(int rideIndex)
 	_currentTrackCurve = RCT2_ADDRESS(0x0097CC68, uint8)[ride->type * 2] | 0x100;
 	_currentTrackSlopeEnd = 0;
 	RCT2_GLOBAL(0x00F440B3, uint8) = 0;
-	_currentTrackLiftHill = 0;
+	if (!CHAIN_LIFT_CHEAT) _currentTrackLiftHill = 0;
 	_currentTrackCovered = 0;
 
 	if (RCT2_GLOBAL(0x0097D4F2 + (ride->type * 8), uint16) & 0x8000)

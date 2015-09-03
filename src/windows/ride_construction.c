@@ -653,10 +653,12 @@ static void window_ride_construction_resize(rct_window *w)
 			(1ULL << WIDX_LEVEL) |
 			(1ULL << WIDX_SLOPE_UP) |
 			(1ULL << WIDX_SLOPE_UP_STEEP) |
-			(1ULL << WIDX_CHAIN_LIFT) |
 			(1ULL << WIDX_BANK_LEFT) |
 			(1ULL << WIDX_BANK_STRAIGHT) |
 			(1ULL << WIDX_BANK_RIGHT);
+		if (!CHAIN_LIFT_CHEAT) {
+			disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
+		}
 	}
 
 	// Disable large curves if the start or end of the track is sloped.
@@ -913,25 +915,34 @@ static void window_ride_construction_resize(rct_window *w)
 	if (_currentTrackBankEnd != TRACK_BANK_NONE || _previousTrackBankEnd != TRACK_BANK_NONE) {
 		disabledWidgets |=
 			(1ULL << WIDX_SLOPE_DOWN_STEEP) |
-			(1ULL << WIDX_SLOPE_UP_STEEP) |
-			(1ULL << WIDX_CHAIN_LIFT);
-	}
-	if (_currentTrackCurve != TRACK_CURVE_NONE) {
-		if (!is_track_enabled(TRACK_LIFT_HILL_CURVE)) {
-			disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
-		}
-		if (_currentTrackSlopeEnd == TRACK_SLOPE_NONE) {
-			disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
-		}
-		if (_currentTrackSlopeEnd == TRACK_SLOPE_UP_60) {
-			disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
-		}
-		if (_currentTrackSlopeEnd == TRACK_SLOPE_DOWN_60) {
+			(1ULL << WIDX_SLOPE_UP_STEEP);
+		if (!CHAIN_LIFT_CHEAT) {
 			disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
 		}
 	}
-	if (_currentTrackSlopeEnd == TRACK_SLOPE_UP_90 || _previousTrackSlopeEnd == TRACK_SLOPE_UP_90) {
-		disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
+	if (!CHAIN_LIFT_CHEAT) {
+		if (_currentTrackCurve != TRACK_CURVE_NONE) {
+			if (!is_track_enabled(TRACK_LIFT_HILL_CURVE)) {
+				disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
+			}
+			if (_currentTrackSlopeEnd == TRACK_SLOPE_NONE) {
+				disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
+			}
+			if (_currentTrackSlopeEnd == TRACK_SLOPE_UP_60) {
+				disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
+			}
+			if (_currentTrackSlopeEnd == TRACK_SLOPE_DOWN_60) {
+				disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
+			}
+		}
+		if (_currentTrackSlopeEnd == TRACK_SLOPE_UP_90 || _previousTrackSlopeEnd == TRACK_SLOPE_UP_90) {
+			disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
+		}
+		if (!is_track_enabled(TRACK_LIFT_HILL_STEEP)) {
+			if (_previousTrackSlopeEnd == TRACK_SLOPE_UP_60 || _currentTrackSlopeEnd == TRACK_SLOPE_UP_60) {
+				disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
+			}
+		}
 	}
 	if (_previousTrackBankEnd == TRACK_BANK_UPSIDE_DOWN) {
 		disabledWidgets |=
@@ -1016,7 +1027,7 @@ static void window_ride_construction_resize(rct_window *w)
 	if (_currentTrackCurve != TRACK_CURVE_NONE && _currentTrackSlopeEnd == TRACK_SLOPE_DOWN_60) {
 		disabledWidgets |= (1ULL << WIDX_SLOPE_DOWN);
 	}
-	if (_currentTrackLiftHill & 1) {
+	if (!CHAIN_LIFT_CHEAT && _currentTrackLiftHill & 1) {
 		if (_currentTrackSlopeEnd != TRACK_SLOPE_NONE && !is_track_enabled(TRACK_LIFT_HILL_CURVE)) {
 			disabledWidgets |=
 				(1ULL << WIDX_LEFT_CURVE_SMALL) |
@@ -1030,11 +1041,6 @@ static void window_ride_construction_resize(rct_window *w)
 			if (w->widgets[WIDX_SLOPE_UP_STEEP].tooltip == STR_RIDE_CONSTRUCTION_STEEP_SLOPE_UP_TIP) {
 				disabledWidgets |= (1ULL << WIDX_SLOPE_UP_STEEP);
 			}
-		}
-	}
-	if (!is_track_enabled(TRACK_LIFT_HILL_STEEP)) {
-		if (_previousTrackSlopeEnd == TRACK_SLOPE_UP_60 || _currentTrackSlopeEnd == TRACK_SLOPE_UP_60) {
-			disabledWidgets |= (1ULL << WIDX_CHAIN_LIFT);
 		}
 	}
 	if (_previousTrackSlopeEnd == TRACK_SLOPE_UP_60 && _currentTrackCurve != TRACK_CURVE_NONE) {
@@ -1421,7 +1427,7 @@ static void window_ride_construction_mousedown(int widgetIndex, rct_window *w, r
 	case WIDX_CHAIN_LIFT:
 		sub_6C9627();
 		_currentTrackLiftHill ^= 1;
-		if (_currentTrackLiftHill & 1) {
+		if (!CHAIN_LIFT_CHEAT && _currentTrackLiftHill & 1) {
 			_currentTrackCovered &= ~1;
 		}
 		_currentTrackPrice = MONEY32_UNDEFINED;
@@ -1493,7 +1499,7 @@ static void window_ride_construction_mousedown(int widgetIndex, rct_window *w, r
 	case WIDX_O_TRACK:
 		sub_6C9627();
 		_currentTrackCovered |= 1;
-		_currentTrackLiftHill &= ~1;
+		if (!CHAIN_LIFT_CHEAT) _currentTrackLiftHill &= ~1;
 		_currentTrackPrice = MONEY32_UNDEFINED;
 		sub_6C84CE();
 		break;
@@ -1543,7 +1549,7 @@ static void window_ride_construction_dropdown(rct_window *w, int widgetIndex, in
 	case TRACK_ELEM_LEFT_VERTICAL_LOOP:
 	case TRACK_ELEM_RIGHT_VERTICAL_LOOP:
 		_currentTrackBankEnd = TRACK_BANK_NONE;
-		_currentTrackLiftHill &= ~1;
+		if (!CHAIN_LIFT_CHEAT) _currentTrackLiftHill &= ~1;
 		break;
 	}
 	_currentTrackCurve = trackPiece | 0x100;
@@ -2759,7 +2765,7 @@ static void window_ride_construction_update_widgets(rct_window *w)
 	}
 
 	int x;
-	if (is_track_enabled(TRACK_LIFT_HILL) && _currentTrackCurve < 256) {
+	if (CHAIN_LIFT_CHEAT || (is_track_enabled(TRACK_LIFT_HILL) && _currentTrackCurve < 256)) {
 		window_ride_construction_widgets[WIDX_CHAIN_LIFT].type = WWT_FLATBTN;
 		x = 9;
 	} else {
@@ -3187,7 +3193,7 @@ static void loc_6C7502(int al)
 	_currentTrackPrice = MONEY32_UNDEFINED;
 	if (_rideConstructionState == RIDE_CONSTRUCTION_STATE_FRONT) {
 		if (al != 2 && al != 4 && al != 0) {
-			_currentTrackLiftHill &= ~1;
+			if (!CHAIN_LIFT_CHEAT) _currentTrackLiftHill &= ~1;
 		}
 	}
 	sub_6C84CE();

@@ -882,6 +882,7 @@ extern rct_ride* g_ride_list;
 
 extern const uint8 gRideClassifications[255];
 
+#define CHAIN_LIFT_CHEAT (1)
 
 // Macros for very commonly used varaibles, eventually will be changed to locals or globals
 #define _enabledRidePieces							RCT2_GLOBAL(0x00F44048, uint64)
