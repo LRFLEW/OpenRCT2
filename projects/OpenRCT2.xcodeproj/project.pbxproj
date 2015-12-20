@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		634C8EFC1C26907300513D90 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 634C8EFB1C26907300513D90 /* data */; };
+		63D71EC01C269A0500D36805 /* g2.dat in Resources */ = {isa = PBXBuildFile; fileRef = 63D71E9C1C269A0400D36805 /* g2.dat */; };
+		63D71EE21C269A1E00D36805 /* language in Resources */ = {isa = PBXBuildFile; fileRef = 63D71EE01C269A1E00D36805 /* language */; };
+		63D71EE31C269A1E00D36805 /* title in Resources */ = {isa = PBXBuildFile; fileRef = 63D71EE11C269A1E00D36805 /* title */; };
 		D41B73EF1C2101890080A7B9 /* libcurl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D41B73EE1C2101890080A7B9 /* libcurl.tbd */; };
 		D41B73F11C21018C0080A7B9 /* libssl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D41B73F01C21018C0080A7B9 /* libssl.tbd */; };
 		D41B741D1C210A7A0080A7B9 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D41B741C1C210A7A0080A7B9 /* libiconv.tbd */; };
@@ -184,9 +188,6 @@
 		D4EC48DF1C2634E90024B507 /* argparse.c in Sources */ = {isa = PBXBuildFile; fileRef = D4EC48D61C2634E90024B507 /* argparse.c */; };
 		D4EC48E01C2634E90024B507 /* CuTest.c in Sources */ = {isa = PBXBuildFile; fileRef = D4EC48D91C2634E90024B507 /* CuTest.c */; };
 		D4EC48E21C2634E90024B507 /* lodepng.c in Sources */ = {isa = PBXBuildFile; fileRef = D4EC48DD1C2634E90024B507 /* lodepng.c */; };
-		D4EC48E61C2637710024B507 /* g2.dat in Resources */ = {isa = PBXBuildFile; fileRef = D4EC48E31C2637710024B507 /* g2.dat */; };
-		D4EC48E71C2637710024B507 /* language in Resources */ = {isa = PBXBuildFile; fileRef = D4EC48E41C2637710024B507 /* language */; };
-		D4EC48E81C2637710024B507 /* title in Resources */ = {isa = PBXBuildFile; fileRef = D4EC48E51C2637710024B507 /* title */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -208,11 +209,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		634C8EFB1C26907300513D90 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
+		63D71E9C1C269A0400D36805 /* g2.dat */ = {isa = PBXFileReference; lastKnownFileType = file; path = g2.dat; sourceTree = "<group>"; };
+		63D71EE01C269A1E00D36805 /* language */ = {isa = PBXFileReference; lastKnownFileType = folder; path = language; sourceTree = "<group>"; };
+		63D71EE11C269A1E00D36805 /* title */ = {isa = PBXFileReference; lastKnownFileType = folder; path = title; sourceTree = "<group>"; };
 		D41B73EE1C2101890080A7B9 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
 		D41B73F01C21018C0080A7B9 /* libssl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libssl.tbd; path = usr/lib/libssl.tbd; sourceTree = SDKROOT; };
 		D41B741C1C210A7A0080A7B9 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
-		D41B74721C2125E50080A7B9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = distribution/osx/Assets.xcassets; sourceTree = SOURCE_ROOT; };
-		D4895D321C23EFDD000CD788 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = distribution/osx/Info.plist; sourceTree = SOURCE_ROOT; };
+		D41B74721C2125E50080A7B9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = distribution/osx/Assets.xcassets; sourceTree = "<group>"; };
+		D4895D321C23EFDD000CD788 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../distribution/osx/Info.plist; sourceTree = SOURCE_ROOT; };
 		D497D0781C20FD52002BF46A /* OpenRCT2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenRCT2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4EC46D61C26342F0024B507 /* addresses.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = addresses.c; path = src/addresses.c; sourceTree = "<group>"; };
 		D4EC46D71C26342F0024B507 /* addresses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = addresses.h; path = src/addresses.h; sourceTree = "<group>"; };
@@ -540,9 +545,6 @@
 		D4EC48DB1C2634E90024B507 /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 		D4EC48DD1C2634E90024B507 /* lodepng.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lodepng.c; sourceTree = "<group>"; };
 		D4EC48DE1C2634E90024B507 /* lodepng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lodepng.h; sourceTree = "<group>"; };
-		D4EC48E31C2637710024B507 /* g2.dat */ = {isa = PBXFileReference; lastKnownFileType = file; name = g2.dat; path = data/g2.dat; sourceTree = SOURCE_ROOT; };
-		D4EC48E41C2637710024B507 /* language */ = {isa = PBXFileReference; lastKnownFileType = folder; name = language; path = data/language; sourceTree = SOURCE_ROOT; };
-		D4EC48E51C2637710024B507 /* title */ = {isa = PBXFileReference; lastKnownFileType = folder; name = title; path = data/title; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -563,6 +565,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		63D71E9B1C269A0400D36805 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				63D71E9C1C269A0400D36805 /* g2.dat */,
+				63D71EE01C269A1E00D36805 /* language */,
+				63D71EE11C269A1E00D36805 /* title */,
+			);
+			path = data;
+			sourceTree = "<group>";
+		};
 		D41B72431C21015A0080A7B9 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -622,6 +634,7 @@
 				D4EC47741C26342F0024B507 /* tutorial.h */,
 			);
 			name = Sources;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		D41B73ED1C21017D0080A7B9 /* Libraries */ = {
@@ -669,20 +682,11 @@
 			children = (
 				D41B74721C2125E50080A7B9 /* Assets.xcassets */,
 				D4895D321C23EFDD000CD788 /* Info.plist */,
-				D4C1EDD01C266A0B00F71B63 /* data */,
+				634C8EFB1C26907300513D90 /* data */,
+				63D71E9B1C269A0400D36805 /* data */,
 			);
 			name = Resources;
-			path = OpenRCT2;
-			sourceTree = "<group>";
-		};
-		D4C1EDD01C266A0B00F71B63 /* data */ = {
-			isa = PBXGroup;
-			children = (
-				D4EC48E31C2637710024B507 /* g2.dat */,
-				D4EC48E41C2637710024B507 /* language */,
-				D4EC48E51C2637710024B507 /* title */,
-			);
-			name = data;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		D4EC46D81C26342F0024B507 /* audio */ = {
@@ -1210,10 +1214,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				634C8EFC1C26907300513D90 /* data in Resources */,
 				D41B74731C2125E50080A7B9 /* Assets.xcassets in Resources */,
-				D4EC48E61C2637710024B507 /* g2.dat in Resources */,
-				D4EC48E71C2637710024B507 /* language in Resources */,
-				D4EC48E81C2637710024B507 /* title in Resources */,
+				63D71EC01C269A0500D36805 /* g2.dat in Resources */,
+				D41B74731C2125E50080A7B9 /* Assets.xcassets in Resources */,
+				63D71EE21C269A1E00D36805 /* language in Resources */,
+				63D71EE31C269A1E00D36805 /* title in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1226,7 +1232,7 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/openrct2.exe",
+				"$(SRCROOT)/../openrct2.exe",
 			);
 			name = "Create Segment Files";
 			outputPaths = (
@@ -1235,7 +1241,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "dd if=\"${SRCROOT}/openrct2.exe\" of=\"${DERIVED_FILE_DIR}/openrct2_text\" bs=4096 skip=1 count=1187\ndd if=\"${SRCROOT}/openrct2.exe\" of=\"${DERIVED_FILE_DIR}/openrct2_data\" bs=4096 skip=1188 count=318\ndd if=/dev/zero of=\"${DERIVED_FILE_DIR}/openrct2_data\" bs=4096 seek=318 count=2630 conv=notrunc\ndd if=\"${SRCROOT}/openrct2.exe\" of=\"${DERIVED_FILE_DIR}/openrct2_data\" bs=4096 skip=1506 seek=2948 count=1 conv=notrunc";
+			shellScript = "dd if=\"${SRCROOT}/../openrct2.exe\" of=\"${DERIVED_FILE_DIR}/openrct2_text\" bs=4096 skip=1 count=1187\ndd if=\"${SRCROOT}/../openrct2.exe\" of=\"${DERIVED_FILE_DIR}/openrct2_data\" bs=4096 skip=1188 count=318\ndd if=/dev/zero of=\"${DERIVED_FILE_DIR}/openrct2_data\" bs=4096 seek=318 count=2630 conv=notrunc\ndd if=\"${SRCROOT}/../openrct2.exe\" of=\"${DERIVED_FILE_DIR}/openrct2_data\" bs=4096 skip=1506 seek=2948 count=1 conv=notrunc";
 		};
 		D42C09D21C254F4E00309751 /* Build g2.dat */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1251,7 +1257,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\" sprite build \"${SRCROOT}/data/g2.dat\" \"${SRCROOT}/resources/g2/\"";
+			shellScript = "\"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\" sprite build \"${SRCROOT}/../data/g2.dat\" \"${SRCROOT}/../resources/g2/\"";
 		};
 		D4EC012A1C25532B00DAFE69 /* Setup AppIcon */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1259,30 +1265,30 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/resources/logo/icon_x16.png",
-				"$(SRCROOT)/resources/logo/icon_x32.png",
-				"$(SRCROOT)/resources/logo/icon_x64.png",
-				"$(SRCROOT)/resources/logo/icon_x128.png",
-				"$(SRCROOT)/resources/logo/icon_x256.png",
-				"$(SRCROOT)/resources/logo/icon_x512.png",
-				"$(SRCROOT)/resources/logo/icon_x1024.png",
+				"$(SRCROOT)/../resources/logo/icon_x16.png",
+				"$(SRCROOT)/../resources/logo/icon_x32.png",
+				"$(SRCROOT)/../resources/logo/icon_x64.png",
+				"$(SRCROOT)/../resources/logo/icon_x128.png",
+				"$(SRCROOT)/../resources/logo/icon_x256.png",
+				"$(SRCROOT)/../resources/logo/icon_x512.png",
+				"$(SRCROOT)/../resources/logo/icon_x1024.png",
 			);
 			name = "Setup AppIcon";
 			outputPaths = (
-				"$(SRCROOT)/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16.png",
-				"$(SRCROOT)/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png",
-				"$(SRCROOT)/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32.png",
-				"$(SRCROOT)/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png",
-				"$(SRCROOT)/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128.png",
-				"$(SRCROOT)/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png",
-				"$(SRCROOT)/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256.png",
-				"$(SRCROOT)/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png",
-				"$(SRCROOT)/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512.png",
-				"$(SRCROOT)/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png",
+				"$(SRCROOT)/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16.png",
+				"$(SRCROOT)/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png",
+				"$(SRCROOT)/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32.png",
+				"$(SRCROOT)/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png",
+				"$(SRCROOT)/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128.png",
+				"$(SRCROOT)/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png",
+				"$(SRCROOT)/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256.png",
+				"$(SRCROOT)/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png",
+				"$(SRCROOT)/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512.png",
+				"$(SRCROOT)/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ ! -e \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16.png\" ]]; then ln \"${SRCROOT}/resources/logo/icon_x16.png\" \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16.png\"; fi\nif [[ ! -e \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png\" ]]; then ln \"${SRCROOT}/resources/logo/icon_x32.png\" \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png\"; fi\nif [[ ! -e \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32.png\" ]]; then ln \"${SRCROOT}/resources/logo/icon_x32.png\" \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32.png\"; fi\nif [[ ! -e \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png\" ]]; then ln \"${SRCROOT}/resources/logo/icon_x64.png\" \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png\"; fi\nif [[ ! -e \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128.png\" ]]; then ln \"${SRCROOT}/resources/logo/icon_x128.png\" \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128.png\"; fi\nif [[ ! -e \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png\" ]]; then ln \"${SRCROOT}/resources/logo/icon_x256.png\" \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png\"; fi\nif [[ ! -e \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256.png\" ]]; then ln \"${SRCROOT}/resources/logo/icon_x256.png\" \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256.png\"; fi\nif [[ ! -e \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png\" ]]; then ln \"${SRCROOT}/resources/logo/icon_x512.png\" \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png\"; fi\nif [[ ! -e \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512.png\" ]]; then ln \"${SRCROOT}/resources/logo/icon_x512.png\" \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512.png\"; fi\nif [[ ! -e \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png\" ]]; then ln \"${SRCROOT}/resources/logo/icon_x1024.png\" \"${SRCROOT}/distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png\"; fi";
+			shellScript = "if [[ ! -e \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16.png\" ]]; then ln \"${SRCROOT}/../resources/logo/icon_x16.png\" \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16.png\"; fi\nif [[ ! -e \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png\" ]]; then ln \"${SRCROOT}/../resources/logo/icon_x32.png\" \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png\"; fi\nif [[ ! -e \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32.png\" ]]; then ln \"${SRCROOT}/../resources/logo/icon_x32.png\" \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32.png\"; fi\nif [[ ! -e \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png\" ]]; then ln \"${SRCROOT}/../resources/logo/icon_x64.png\" \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png\"; fi\nif [[ ! -e \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128.png\" ]]; then ln \"${SRCROOT}/../resources/logo/icon_x128.png\" \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128.png\"; fi\nif [[ ! -e \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png\" ]]; then ln \"${SRCROOT}/../resources/logo/icon_x256.png\" \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png\"; fi\nif [[ ! -e \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256.png\" ]]; then ln \"${SRCROOT}/../resources/logo/icon_x256.png\" \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256.png\"; fi\nif [[ ! -e \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png\" ]]; then ln \"${SRCROOT}/../resources/logo/icon_x512.png\" \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png\"; fi\nif [[ ! -e \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512.png\" ]]; then ln \"${SRCROOT}/../resources/logo/icon_x512.png\" \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512.png\"; fi\nif [[ ! -e \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png\" ]]; then ln \"${SRCROOT}/../resources/logo/icon_x1024.png\" \"${SRCROOT}/../distribution/osx/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png\"; fi";
 		};
 		D4EC48E91C264FC20024B507 /* Download Libraries */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1569,7 +1575,7 @@
 					"$(SRCROOT)/libxc/include/SDL2",
 					"$(SRCROOT)/lib/",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/distribution/osx/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/../distribution/osx/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1614,7 +1620,7 @@
 					"$(SRCROOT)/libxc/include/SDL2",
 					"$(SRCROOT)/lib/",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/distribution/osx/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/../distribution/osx/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
