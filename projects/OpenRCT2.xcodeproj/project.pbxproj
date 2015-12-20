@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		63F9298D1C2689BB009F9797 /* g2.dat in Resources */ = {isa = PBXBuildFile; fileRef = 63F9298C1C2689BB009F9797 /* g2.dat */; };
-		63F929D21C268A31009F9797 /* language in Resources */ = {isa = PBXBuildFile; fileRef = 63F929D01C268A31009F9797 /* language */; };
-		63F929D31C268A31009F9797 /* title in Resources */ = {isa = PBXBuildFile; fileRef = 63F929D11C268A31009F9797 /* title */; };
+		63F929D51C268AF6009F9797 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 63F929D41C268AF6009F9797 /* data */; };
 		D41B73EF1C2101890080A7B9 /* libcurl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D41B73EE1C2101890080A7B9 /* libcurl.tbd */; };
 		D41B73F11C21018C0080A7B9 /* libssl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D41B73F01C21018C0080A7B9 /* libssl.tbd */; };
 		D41B741D1C210A7A0080A7B9 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D41B741C1C210A7A0080A7B9 /* libiconv.tbd */; };
@@ -208,9 +206,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		63F9298C1C2689BB009F9797 /* g2.dat */ = {isa = PBXFileReference; lastKnownFileType = file; path = g2.dat; sourceTree = "<group>"; };
-		63F929D01C268A31009F9797 /* language */ = {isa = PBXFileReference; lastKnownFileType = folder; path = language; sourceTree = "<group>"; };
-		63F929D11C268A31009F9797 /* title */ = {isa = PBXFileReference; lastKnownFileType = folder; path = title; sourceTree = "<group>"; };
+		63F929D41C268AF6009F9797 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
 		D41B73EE1C2101890080A7B9 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
 		D41B73F01C21018C0080A7B9 /* libssl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libssl.tbd; path = usr/lib/libssl.tbd; sourceTree = SDKROOT; };
 		D41B741C1C210A7A0080A7B9 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
@@ -671,20 +667,10 @@
 			children = (
 				D41B74721C2125E50080A7B9 /* Assets.xcassets */,
 				D4895D321C23EFDD000CD788 /* Info.plist */,
-				D4C1EDD01C266A0B00F71B63 /* data */,
+				63F929D41C268AF6009F9797 /* data */,
 			);
 			name = Resources;
 			path = ..;
-			sourceTree = "<group>";
-		};
-		D4C1EDD01C266A0B00F71B63 /* data */ = {
-			isa = PBXGroup;
-			children = (
-				63F9298C1C2689BB009F9797 /* g2.dat */,
-				63F929D01C268A31009F9797 /* language */,
-				63F929D11C268A31009F9797 /* title */,
-			);
-			path = data;
 			sourceTree = "<group>";
 		};
 		D4EC46D81C26342F0024B507 /* audio */ = {
@@ -1214,10 +1200,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63F929D51C268AF6009F9797 /* data in Resources */,
 				D41B74731C2125E50080A7B9 /* Assets.xcassets in Resources */,
-				63F9298D1C2689BB009F9797 /* g2.dat in Resources */,
-				63F929D21C268A31009F9797 /* language in Resources */,
-				63F929D31C268A31009F9797 /* title in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
