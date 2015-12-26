@@ -16,6 +16,10 @@
 		D46105CE1C38828D00DB1EE3 /* scenario_sources.c in Sources */ = {isa = PBXBuildFile; fileRef = D46105CD1C38828D00DB1EE3 /* scenario_sources.c */; };
 		D4ABAB061C2F812B0080CAD9 /* news_options.c in Sources */ = {isa = PBXBuildFile; fileRef = D4ABAB051C2F812B0080CAD9 /* news_options.c */; };
 		D4D4DF141C34697B0048BE43 /* image_io.c in Sources */ = {isa = PBXBuildFile; fileRef = D4D4DF121C34697B0048BE43 /* image_io.c */; };
+		D48D31081C3117EB00DFF9E2 /* surface.c in Sources */ = {isa = PBXBuildFile; fileRef = D48D31061C3117EB00DFF9E2 /* surface.c */; };
+		D48D310B1C31181300DFF9E2 /* renderer.c in Sources */ = {isa = PBXBuildFile; fileRef = D48D31091C31181300DFF9E2 /* renderer.c */; };
+		D4ABAB061C2F812B0080CAD9 /* news_options.c in Sources */ = {isa = PBXBuildFile; fileRef = D4ABAB051C2F812B0080CAD9 /* news_options.c */; };
+		D4ABAB091C2F90BB0080CAD9 /* video.c in Sources */ = {isa = PBXBuildFile; fileRef = D4ABAB071C2F90BB0080CAD9 /* video.c */; };
 		D4EC47DF1C26342F0024B507 /* addresses.c in Sources */ = {isa = PBXBuildFile; fileRef = D4EC46D61C26342F0024B507 /* addresses.c */; };
 		D4EC47E01C26342F0024B507 /* audio.c in Sources */ = {isa = PBXBuildFile; fileRef = D4EC46D91C26342F0024B507 /* audio.c */; };
 		D4EC47E11C26342F0024B507 /* mixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4EC46DB1C26342F0024B507 /* mixer.cpp */; };
@@ -222,10 +226,16 @@
 		D435325E1C3472E500BA219B /* libpng.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libpng.dylib; sourceTree = "<group>"; };
 		D46105CD1C38828D00DB1EE3 /* scenario_sources.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = scenario_sources.c; path = src/scenario_sources.c; sourceTree = "<group>"; };
 		D4895D321C23EFDD000CD788 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = distribution/osx/Info.plist; sourceTree = SOURCE_ROOT; };
+		D48D31061C3117EB00DFF9E2 /* surface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = surface.c; path = src/video/surface.c; sourceTree = "<group>"; };
+		D48D31071C3117EB00DFF9E2 /* surface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = surface.h; path = src/video/surface.h; sourceTree = "<group>"; };
+		D48D31091C31181300DFF9E2 /* renderer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = renderer.c; path = src/video/renderer.c; sourceTree = "<group>"; };
+		D48D310A1C31181300DFF9E2 /* renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = renderer.h; path = src/video/renderer.h; sourceTree = "<group>"; };
 		D497D0781C20FD52002BF46A /* OpenRCT2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenRCT2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4ABAB051C2F812B0080CAD9 /* news_options.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = news_options.c; sourceTree = "<group>"; };
 		D4D4DF121C34697B0048BE43 /* image_io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = image_io.c; path = src/image_io.c; sourceTree = "<group>"; };
 		D4D4DF131C34697B0048BE43 /* image_io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = image_io.h; path = src/image_io.h; sourceTree = "<group>"; };
+		D4ABAB071C2F90BB0080CAD9 /* video.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = video.c; path = src/video/video.c; sourceTree = "<group>"; };
+		D4ABAB081C2F90BB0080CAD9 /* video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = video.h; path = src/video/video.h; sourceTree = "<group>"; };
 		D4EC46D61C26342F0024B507 /* addresses.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = addresses.c; path = src/addresses.c; sourceTree = "<group>"; };
 		D4EC46D71C26342F0024B507 /* addresses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = addresses.h; path = src/addresses.h; sourceTree = "<group>"; };
 		D4EC46D91C26342F0024B507 /* audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = audio.c; sourceTree = "<group>"; };
@@ -589,6 +599,7 @@
 				D4EC474B1C26342F0024B507 /* peep */,
 				D4EC47501C26342F0024B507 /* platform */,
 				D4EC475C1C26342F0024B507 /* ride */,
+				D43A0A341C2E7646003872C6 /* video */,
 				D4EC47751C26342F0024B507 /* util */,
 				D4EC477A1C26342F0024B507 /* windows */,
 				D4EC47C21C26342F0024B507 /* world */,
@@ -659,6 +670,19 @@
 				D4EC48DC1C2634E90024B507 /* lodepng */,
 			);
 			name = "Source Libraries";
+			sourceTree = "<group>";
+		};
+		D43A0A341C2E7646003872C6 /* video */ = {
+			isa = PBXGroup;
+			children = (
+				D4ABAB071C2F90BB0080CAD9 /* video.c */,
+				D4ABAB081C2F90BB0080CAD9 /* video.h */,
+				D48D31061C3117EB00DFF9E2 /* surface.c */,
+				D48D31071C3117EB00DFF9E2 /* surface.h */,
+				D48D31091C31181300DFF9E2 /* renderer.c */,
+				D48D310A1C31181300DFF9E2 /* renderer.h */,
+			);
+			name = video;
 			sourceTree = "<group>";
 		};
 		D497D06F1C20FD52002BF46A = {
@@ -1433,6 +1457,7 @@
 				D4EC48161C26342F0024B507 /* peep.c in Sources */,
 				D4EC47FE1C26342F0024B507 /* viewport_interaction.c in Sources */,
 				D4EC48171C26342F0024B507 /* staff.c in Sources */,
+				D48D31081C3117EB00DFF9E2 /* surface.c in Sources */,
 				D4EC48191C26342F0024B507 /* osx.m in Sources */,
 				D4EC48771C26342F0024B507 /* fountain.c in Sources */,
 				D4EC48711C26342F0024B507 /* water.c in Sources */,
@@ -1446,8 +1471,10 @@
 				D4EC48671C26342F0024B507 /* title_logo.c in Sources */,
 				D4EC484C1C26342F0024B507 /* new_campaign.c in Sources */,
 				D4EC483B1C26342F0024B507 /* error.c in Sources */,
+				D48D310B1C31181300DFF9E2 /* renderer.c in Sources */,
 				D4EC48121C26342F0024B507 /* twitch.cpp in Sources */,
 				D4EC48311C26342F0024B507 /* cheats.c in Sources */,
+				D4ABAB091C2F90BB0080CAD9 /* video.c in Sources */,
 				D4EC48051C26342F0024B507 /* language.cpp in Sources */,
 				D4EC48451C26342F0024B507 /* main.c in Sources */,
 				D4EC482D1C26342F0024B507 /* util.c in Sources */,

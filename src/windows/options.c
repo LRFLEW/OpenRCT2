@@ -42,6 +42,7 @@
 #include "../platform/platform.h"
 #include "../sprites.h"
 #include "../title.h"
+#include "../video/video.h"
 #include "dropdown.h"
 #include "error.h"
 #include "../util/util.h"
@@ -547,7 +548,7 @@ static void window_options_mouseup(rct_window *w, int widgetIndex)
 			break;
 		case WIDX_MINIMIZE_FOCUS_LOSS:
 			gConfigGeneral.minimize_fullscreen_focus_loss ^= 1;
-			platform_refresh_video();
+			video_refresh();
 			config_save_default();
 			window_invalidate(w);
 			break;

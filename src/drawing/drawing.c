@@ -24,6 +24,7 @@
 #include "../interface/window.h"
 #include "../platform/platform.h"
 #include "../object.h"
+#include "../video/video.h"
 #include "../world/water.h"
 #include "drawing.h"
 
@@ -149,7 +150,7 @@ void gfx_transpose_palette(int pal, unsigned char product)
 		source_pointer += 3;
 		dest_pointer += 4;
 	}
-	platform_update_palette((uint8*)RCT2_ADDRESS_PALETTE, 10, 236);
+	video_update_palette((uint8*)RCT2_ADDRESS_PALETTE, 10, 236);
 }
 
 /**
@@ -178,7 +179,7 @@ void load_palette(){
 		source_pointer += 3;
 		dest_pointer += 4;
 	}
-	platform_update_palette((uint8*)RCT2_ADDRESS_PALETTE, 10, 236);
+	video_update_palette((uint8*)RCT2_ADDRESS_PALETTE, 10, 236);
 }
 
 /**

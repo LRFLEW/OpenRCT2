@@ -38,6 +38,7 @@
 #include "title.h"
 #include "util/sawyercoding.h"
 #include "util/util.h"
+#include "video/video.h"
 #include "world/mapgen.h"
 
 #if defined(__unix__)
@@ -401,7 +402,7 @@ static void openrct2_loop()
 
 			if ((SDL_GetWindowFlags(gWindow) & (SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN)) == 0) {
 				rct2_draw();
-				platform_draw();
+				video_draw();
 			}
 
 			fps++;
@@ -437,7 +438,7 @@ static void openrct2_loop()
 
 			if ((SDL_GetWindowFlags(gWindow) & (SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN)) == 0) {
 				rct2_draw();
-				platform_draw();
+				video_draw();
 			}
 		}
 	} while (!_finished);

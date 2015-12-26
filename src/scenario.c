@@ -39,6 +39,7 @@
 #include "title.h"
 #include "util/sawyercoding.h"
 #include "util/util.h"
+#include "video/video.h"
 #include "world/map.h"
 #include "world/park.h"
 #include "world/scenery.h"
@@ -586,7 +587,7 @@ static void scenario_update_daynight_cycle()
 
 	// Only update palette if day / night cycle has changed
 	if (gDayNightCycle != currentDayNightCycle) {
-		platform_update_palette(RCT2_ADDRESS(RCT2_ADDRESS_PALETTE, uint8), 10, 236);
+		video_update_palette(RCT2_ADDRESS(RCT2_ADDRESS_PALETTE, uint8), 10, 236);
 	}
 }
 

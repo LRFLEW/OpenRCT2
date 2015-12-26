@@ -101,21 +101,16 @@ extern int gNumResolutions;
 extern resolution *gResolutions;
 extern SDL_Window *gWindow;
 
-extern bool gHardwareDisplay;
-
 extern bool gSteamOverlayActive;
 
 // Platform shared definitions
 void platform_update_fullscreen_resolutions();
 void platform_get_closest_resolution(int inWidth, int inHeight, int *outWidth, int *outHeight);
 void platform_init();
-void platform_draw();
 void platform_free();
 void platform_trigger_resize();
-void platform_update_palette(const uint8 *colours, int start_index, int num_colours);
 void platform_set_fullscreen_mode(int mode);
 void platform_set_cursor(char cursor);
-void platform_refresh_video();
 void platform_process_messages();
 int platform_scancode_to_rct_keycode(int sdl_key);
 void platform_start_text_input(utf8 *buffer, int max_length);

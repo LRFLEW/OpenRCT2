@@ -33,6 +33,7 @@
 #include "../openrct2.h"
 #include "../title.h"
 #include "../util/util.h"
+#include "../video/video.h"
 #include "platform.h"
 
 typedef void(*update_palette_func)(const uint8*, int, int);
@@ -56,32 +57,13 @@ resolution *gResolutions = NULL;
 int gResolutionsAllowAnyAspectRatio = 0;
 
 SDL_Window *gWindow = NULL;
-SDL_Renderer *gRenderer = NULL;
-SDL_Texture *gBufferTexture = NULL;
-SDL_PixelFormat *gBufferTextureFormat = NULL;
-SDL_Color gPalette[256];
-uint32 gPaletteHWMapped[256];
-bool gHardwareDisplay;
 
 bool gSteamOverlayActive = false;
-
-static SDL_Surface *_surface = NULL;
-static SDL_Surface *_RGBASurface = NULL;
-static SDL_Palette *_palette = NULL;
-
-static void *_screenBuffer;
-static int _screenBufferSize;
-static int _screenBufferWidth;
-static int _screenBufferHeight;
-static int _screenBufferPitch;
 
 static SDL_Cursor* _cursors[CURSOR_COUNT];
 static const int _fullscreen_modes[] = { 0, SDL_WINDOW_FULLSCREEN, SDL_WINDOW_FULLSCREEN_DESKTOP };
 static unsigned int _lastGestureTimestamp;
 static float _gestureRadius;
-
-static uint32 _pixelBeforeOverlay;
-static uint32 _pixelAfterOverlay;
 
 static void platform_create_window();
 static void platform_load_cursors();
@@ -189,134 +171,6 @@ void platform_get_closest_resolution(int inWidth, int inHeight, int *outWidth, i
 	}
 }
 
-static void read_center_pixel(int width, int height, uint32 *pixel) {
-	SDL_Rect centerPixelRegion = {width / 2, height / 2, 1, 1};
-	SDL_RenderReadPixels(gRenderer, &centerPixelRegion, SDL_PIXELFORMAT_RGBA8888, pixel, sizeof(uint32));
-}
-
-// Should be called before SDL_RenderPresent to capture frame buffer before Steam overlay is drawn.
-static void overlay_pre_render_check(int width, int height) {
-	read_center_pixel(width, height, &_pixelBeforeOverlay);
-}
-
-// Should be called after SDL_RenderPresent, when Steam overlay has had the chance to be drawn.
-static void overlay_post_render_check(int width, int height) {
-	static bool overlayActive = false;
-	static bool pausedBeforeOverlay = false;
-
-	read_center_pixel(width, height, &_pixelAfterOverlay);
-
-	// Detect an active Steam overlay by checking if the center pixel is changed by the gray fade.
-	// Will not be triggered by applications rendering to corners, like FRAPS, MSI Afterburner and Friends popups.
-	bool newOverlayActive = _pixelBeforeOverlay != _pixelAfterOverlay;
-
-	// Toggle game pause state consistently with base pause state
-	if (!overlayActive && newOverlayActive) {
-		pausedBeforeOverlay = RCT2_GLOBAL(RCT2_ADDRESS_GAME_PAUSED, uint32) & 1;
-
-		if (!pausedBeforeOverlay) pause_toggle();
-	} else if (overlayActive && !newOverlayActive && !pausedBeforeOverlay) {
-		pause_toggle();
-	}
-
-	overlayActive = newOverlayActive;
-}
-
-void platform_draw()
-{
-	int width = RCT2_GLOBAL(RCT2_ADDRESS_SCREEN_WIDTH, uint16);
-	int height = RCT2_GLOBAL(RCT2_ADDRESS_SCREEN_HEIGHT, uint16);
-
-	if (!gOpenRCT2Headless) {
-		if (gHardwareDisplay) {
-			void *pixels;
-			int pitch;
-			if (SDL_LockTexture(gBufferTexture, NULL, &pixels, &pitch) == 0) {
-				uint8 *src = (uint8*)_screenBuffer;
-				int padding = pitch - (width * 4);
-				if (pitch == width * 4) {
-					uint32 *dst = pixels;
-					for (int i = width * height; i > 0; i--) { *dst++ = *(uint32 *)(&gPaletteHWMapped[*src++]); }
-				}
-				else
-					if (pitch == (width * 2) + padding) {
-						uint16 *dst = pixels;
-						for (int y = height; y > 0; y--) {
-							for (int x = width; x > 0; x--) {
-								const uint8 lower = *(uint8 *)(&gPaletteHWMapped[*src++]);
-								const uint8 upper = *(uint8 *)(&gPaletteHWMapped[*src++]);
-								*dst++ = (lower << 8) | upper;
-							}
-							dst = (uint16*)(((uint8 *)dst) + padding);
-						}
-					}
-					else
-						if (pitch == width + padding) {
-							uint8 *dst = pixels;
-							for (int y = height; y > 0; y--) {
-								for (int x = width; x > 0; x--) { *dst++ = *(uint8 *)(&gPaletteHWMapped[*src++]); }
-								dst += padding;
-							}
-						}
-				SDL_UnlockTexture(gBufferTexture);
-			}
-
-			SDL_RenderCopy(gRenderer, gBufferTexture, NULL, NULL);
-
-			if (gSteamOverlayActive && gConfigGeneral.steam_overlay_pause) {
-				overlay_pre_render_check(width, height);
-			}
-
-			SDL_RenderPresent(gRenderer);
-
-			if (gSteamOverlayActive && gConfigGeneral.steam_overlay_pause) {
-				overlay_post_render_check(width, height);
-			}
-		}
-		else {
-			// Lock the surface before setting its pixels
-			if (SDL_MUSTLOCK(_surface)) {
-				if (SDL_LockSurface(_surface) < 0) {
-					log_error("locking failed %s", SDL_GetError());
-					return;
-				}
-			}
-
-			// Copy pixels from the virtual screen buffer to the surface
-			memcpy(_surface->pixels, _screenBuffer, _surface->pitch * _surface->h);
-
-			// Unlock the surface
-			if (SDL_MUSTLOCK(_surface))
-				SDL_UnlockSurface(_surface);
-
-			// Copy the surface to the window
-			if (gConfigGeneral.window_scale == 1 || gConfigGeneral.window_scale <= 0)
-			{
-				if (SDL_BlitSurface(_surface, NULL, SDL_GetWindowSurface(gWindow), NULL)) {
-					log_fatal("SDL_BlitSurface %s", SDL_GetError());
-					exit(1);
-				}
-			} else {
-				// first blit to rgba surface to change the pixel format
-				if (SDL_BlitSurface(_surface, NULL, _RGBASurface, NULL)) {
-					log_fatal("SDL_BlitSurface %s", SDL_GetError());
-					exit(1);
-				}
-				// then scale to window size. Without changing to RGBA first, SDL complains
-				// about blit configurations being incompatible.
-				if (SDL_BlitScaled(_RGBASurface, NULL, SDL_GetWindowSurface(gWindow), NULL)) {
-					log_fatal("SDL_BlitScaled %s", SDL_GetError());
-					exit(1);
-				}
-			}
-			if (SDL_UpdateWindowSurface(gWindow)) {
-				log_fatal("SDL_UpdateWindowSurface %s", SDL_GetError());
-				exit(1);
-			}
-		}
-	}
-}
-
 static void platform_resize(int width, int height)
 {
 	uint32 flags;
@@ -326,7 +180,7 @@ static void platform_resize(int width, int height)
 	RCT2_GLOBAL(RCT2_ADDRESS_SCREEN_WIDTH, uint16) = dst_w;
 	RCT2_GLOBAL(RCT2_ADDRESS_SCREEN_HEIGHT, uint16) = dst_h;
 
-	platform_refresh_video();
+	video_refresh();
 
 	flags = SDL_GetWindowFlags(gWindow);
 
@@ -356,68 +210,6 @@ void platform_trigger_resize()
 	int w, h;
 	SDL_GetWindowSize(gWindow, &w, &h);
 	platform_resize(w, h);
-}
-
-static uint8 soft_light(uint8 a, uint8 b)
-{
-	float fa = a / 255.0f;
-	float fb = b / 255.0f;
-	float fr;
-	if (fb < 0.5f) {
-		fr = (2 * fa * fb) + ((fa * fa) * (1 - (2 * fb)));
-	} else {
-		fr = (2 * fa * (1 - fb)) + (sqrtf(fa) * ((2 * fb) - 1));
-	}
-	return (uint8)(clamp(0.0f, fr, 1.0f) * 255.0f);
-}
-
-static uint8 lerp(uint8 a, uint8 b, float t)
-{
-	if (t <= 0) return a;
-	if (t >= 1) return b;
-
-	int range = b - a;
-	int amount = (int)(range * t);
-	return (uint8)(a + amount);
-}
-
-void platform_update_palette(const uint8* colours, int start_index, int num_colours)
-{
-	SDL_Surface *surface;
-	int i;
-	colours += start_index * 4;
-
-	for (i = start_index; i < num_colours + start_index; i++) {
-		gPalette[i].r = colours[2];
-		gPalette[i].g = colours[1];
-		gPalette[i].b = colours[0];
-		gPalette[i].a = 0;
-
-		float night = gDayNightCycle;
-		if (night >= 0 && RCT2_GLOBAL(RCT2_ADDRESS_LIGHTNING_ACTIVE, uint8) == 0) {
-			gPalette[i].r = lerp(gPalette[i].r, soft_light(gPalette[i].r, 8), night);
-			gPalette[i].g = lerp(gPalette[i].g, soft_light(gPalette[i].g, 8), night);
-			gPalette[i].b = lerp(gPalette[i].b, soft_light(gPalette[i].b, 128), night);
-		}
-
-		colours += 4;
-		if (gBufferTextureFormat != NULL) {
-			gPaletteHWMapped[i] = SDL_MapRGB(gBufferTextureFormat, gPalette[i].r, gPalette[i].g, gPalette[i].b);
-		}
-	}
-
-	if (!gOpenRCT2Headless && !gHardwareDisplay) {
-		surface = SDL_GetWindowSurface(gWindow);
-		if (!surface) {
-			log_fatal("SDL_GetWindowSurface failed %s", SDL_GetError());
-			exit(1);
-		}
-
-		if (_palette != NULL && SDL_SetPaletteColors(_palette, gPalette, 0, 256)) {
-			log_fatal("SDL_SetPaletteColors failed %s", SDL_GetError());
-			exit(1);
-		}
-	}
 }
 
 void platform_process_messages()
@@ -732,12 +524,7 @@ static void platform_close_window()
 {
 	if (gWindow != NULL)
 		SDL_DestroyWindow(gWindow);
-	if (_surface != NULL)
-		SDL_FreeSurface(_surface);
-	if (_palette != NULL)
-		SDL_FreePalette(_palette);
-	if (_RGBASurface != NULL)
-		SDL_FreeSurface(_RGBASurface);
+	video_close();
 	platform_unload_cursors();
 }
 
@@ -747,13 +534,7 @@ void platform_init()
 	gKeysPressed = malloc(sizeof(unsigned char) * 256);
 	memset(gKeysPressed, 0, sizeof(unsigned char) * 256);
 
-	// Set the highest palette entry to white.
-	// This fixes a bug with the TT:rainbow road due to the
-	// image not using the correct white palette entry.
-	gPalette[255].a = 0;
-	gPalette[255].r = 255;
-	gPalette[255].g = 255;
-	gPalette[255].b = 255;
+	video_init();
 }
 
 static void platform_create_window()
@@ -782,8 +563,6 @@ static void platform_create_window()
 
 	RCT2_GLOBAL(0x009E2D8C, sint32) = 0;
 
-	gHardwareDisplay = gConfigGeneral.hardware_display;
-
 	// Create window in window first rather than fullscreen so we have the display the window is on first
 	gWindow = SDL_CreateWindow(
 		"OpenRCT2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_RESIZABLE
@@ -793,11 +572,13 @@ static void platform_create_window()
 		log_fatal("SDL_CreateWindow failed %s", SDL_GetError());
 		exit(-1);
 	}
+	
+	gHardwareDisplay = gConfigGeneral.hardware_display;
 
 	SDL_SetWindowGrab(gWindow, gConfigGeneral.trap_cursor ? SDL_TRUE : SDL_FALSE);
 
 	// Set the update palette function pointer
-	RCT2_GLOBAL(0x009E2BE4, update_palette_func) = platform_update_palette;
+	RCT2_GLOBAL(0x009E2BE4, update_palette_func) = video_update_palette;
 
 	// Initialise the surface, palette and draw buffer
 	platform_resize(width, height);
@@ -962,132 +743,6 @@ static void platform_load_cursors()
 	_cursors[26] = SDL_CreateCursor(hand_closed_cursor_data, hand_closed_cursor_mask, 32, 32, HAND_CLOSED_CURSOR_HOTX, HAND_CLOSED_CURSOR_HOTY);
 	platform_set_cursor(CURSOR_ARROW);
 	RCT2_GLOBAL(0x14241BC, uint32) = 0;
-}
-
-void platform_refresh_video()
-{
-	int width = RCT2_GLOBAL(RCT2_ADDRESS_SCREEN_WIDTH, uint16);
-	int height = RCT2_GLOBAL(RCT2_ADDRESS_SCREEN_HEIGHT, uint16);
-
-	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, gConfigGeneral.minimize_fullscreen_focus_loss ? "1" : "0");
-
-	log_verbose("HardwareDisplay: %s", gHardwareDisplay ? "true" : "false");
-
-	if (gHardwareDisplay) {
-		if (gRenderer == NULL)
-			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
-		if (gRenderer == NULL) {
-			log_warning("SDL_CreateRenderer failed: %s", SDL_GetError());
-			log_warning("Falling back to software rendering...");
-			gHardwareDisplay = false;
-			platform_refresh_video(); // try again without hardware rendering
-			return;
-		}
-
-		if (gBufferTexture != NULL)
-			SDL_DestroyTexture(gBufferTexture);
-
-		if (gBufferTextureFormat != NULL)
-			SDL_FreeFormat(gBufferTextureFormat);
-
-		SDL_RendererInfo rendererinfo;
-		SDL_GetRendererInfo(gRenderer, &rendererinfo);
-		Uint32 pixelformat = SDL_PIXELFORMAT_UNKNOWN;
-		for(unsigned int i = 0; i < rendererinfo.num_texture_formats; i++){
-			Uint32 format = rendererinfo.texture_formats[i];
-			if(!SDL_ISPIXELFORMAT_FOURCC(format) && !SDL_ISPIXELFORMAT_INDEXED(format) && (pixelformat == SDL_PIXELFORMAT_UNKNOWN || SDL_BYTESPERPIXEL(format) < SDL_BYTESPERPIXEL(pixelformat))){
-				pixelformat = format;
-			}
-		}
-
-		gBufferTexture = SDL_CreateTexture(gRenderer, pixelformat, SDL_TEXTUREACCESS_STREAMING, width, height);
-		Uint32 format;
-		SDL_QueryTexture(gBufferTexture, &format, 0, 0, 0);
-		gBufferTextureFormat = SDL_AllocFormat(format);
-		platform_refresh_screenbuffer(width, height, width);
-		// Load the current palette into the HWmapped version.
-		for (int i = 0; i < 256; ++i) {
-			gPaletteHWMapped[i] = SDL_MapRGB(gBufferTextureFormat, gPalette[i].r, gPalette[i].g, gPalette[i].b);
-		}
-	} else {
-		if (_surface != NULL)
-			SDL_FreeSurface(_surface);
-		if (_RGBASurface != NULL)
-			SDL_FreeSurface(_RGBASurface);
-		if (_palette != NULL)
-			SDL_FreePalette(_palette);
-
-		_surface = SDL_CreateRGBSurface(0, width, height, 8, 0, 0, 0, 0);
-		_RGBASurface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
-		SDL_SetSurfaceBlendMode(_RGBASurface, SDL_BLENDMODE_NONE);
-		_palette = SDL_AllocPalette(256);
-
-		if (!_surface || !_palette || !_RGBASurface) {
-			log_fatal("%p || %p || %p == NULL %s", _surface, _palette, _RGBASurface, SDL_GetError());
-			exit(-1);
-		}
-
-		if (SDL_SetSurfacePalette(_surface, _palette)) {
-			log_fatal("SDL_SetSurfacePalette failed %s", SDL_GetError());
-			exit(-1);
-		}
-
-		platform_refresh_screenbuffer(width, height, _surface->pitch);
-	}
-}
-
-static void platform_refresh_screenbuffer(int width, int height, int pitch)
-{
-	int newScreenBufferSize = pitch * height;
-	char *newScreenBuffer = (char*)malloc(newScreenBufferSize);
-	if (_screenBuffer == NULL) {
-		memset(newScreenBuffer, 0, newScreenBufferSize);
-	} else {
-		if (_screenBufferPitch == pitch) {
-			memcpy(newScreenBuffer, _screenBuffer, min(_screenBufferSize, newScreenBufferSize));
-		} else {
-			char *src = _screenBuffer;
-			char *dst = newScreenBuffer;
-
-			int minWidth = min(_screenBufferWidth, width);
-			int minHeight = min(_screenBufferHeight, height);
-			for (int y = 0; y < minHeight; y++) {
-				memcpy(dst, src, minWidth);
-				if (pitch - minWidth > 0)
-					memset(dst + minWidth, 0, pitch - minWidth);
-
-				src += _screenBufferPitch;
-				dst += pitch;
-			}
-		}
-		//if (newScreenBufferSize - _screenBufferSize > 0)
-		//	memset((uint8*)newScreenBuffer + _screenBufferSize, 0, newScreenBufferSize - _screenBufferSize);
-		free(_screenBuffer);
-	}
-
-	_screenBuffer = newScreenBuffer;
-	_screenBufferSize = newScreenBufferSize;
-	_screenBufferWidth = width;
-	_screenBufferHeight = height;
-	_screenBufferPitch = pitch;
-
-	rct_drawpixelinfo *screenDPI;
-	screenDPI = RCT2_ADDRESS(RCT2_ADDRESS_SCREEN_DPI, rct_drawpixelinfo);
-	screenDPI->bits = _screenBuffer;
-	screenDPI->x = 0;
-	screenDPI->y = 0;
-	screenDPI->width = width;
-	screenDPI->height = height;
-	screenDPI->pitch = _screenBufferPitch - width;
-
-	RCT2_GLOBAL(0x009ABDF0, uint8) = 6;
-	RCT2_GLOBAL(0x009ABDF1, uint8) = 3;
-	RCT2_GLOBAL(0x009ABDF2, uint8) = 1;
-	RCT2_GLOBAL(RCT2_ADDRESS_DIRTY_BLOCK_WIDTH, uint16) = 64;
-	RCT2_GLOBAL(RCT2_ADDRESS_DIRTY_BLOCK_HEIGHT, uint16) = 8;
-	RCT2_GLOBAL(RCT2_ADDRESS_DIRTY_BLOCK_COLUMNS, uint32) = (width >> 6) + 1;
-	RCT2_GLOBAL(RCT2_ADDRESS_DIRTY_BLOCK_ROWS, uint32) = (height >> 3) + 1;
 }
 
 void platform_hide_cursor()
