@@ -95,12 +95,18 @@ void surface_draw() {
 }
 
 void surface_close() {
-	if (_surface != NULL)
+	if (_surface != NULL) {
 		SDL_FreeSurface(_surface);
-	if (_RGBASurface != NULL)
+		_surface = NULL;
+	}
+	if (_RGBASurface != NULL) {
 		SDL_FreeSurface(_RGBASurface);
-	if (_palette != NULL)
+		_RGBASurface = NULL;
+	}
+	if (_palette != NULL) {
 		SDL_FreePalette(_palette);
+		_palette = NULL;
+	}
 }
 
 void surface_update_palette() {

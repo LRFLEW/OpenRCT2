@@ -123,22 +123,20 @@ void renderer_draw() {
 			uint32 *dst = pixels;
 			for (int i = width * height; i > 0; i--) { *dst++ = *(uint32 *)(&_paletteHWMapped[*src++]); }
 		}
-		else
-			if (pitch == (width * 2) + padding) {
-				uint16 *dst = pixels;
-				for (int y = height; y > 0; y--) {
-					for (int x = width; x > 0; x--) { *dst++ = *(uint16 *)(&_paletteHWMapped[*src++]); }
-					dst = (uint16*)(((uint8 *)dst) + padding);
-				}
+		else if (pitch == (width * 2) + padding) {
+			uint16 *dst = pixels;
+			for (int y = height; y > 0; y--) {
+				for (int x = width; x > 0; x--) { *dst++ = *(uint16 *)(&_paletteHWMapped[*src++]); }
+				dst = (uint16*)(((uint8 *)dst) + padding);
 			}
-			else
-				if (pitch == width + padding) {
-					uint8 *dst = pixels;
-					for (int y = height; y > 0; y--) {
-						for (int x = width; x > 0; x--) { *dst++ = *(uint8 *)(&_paletteHWMapped[*src++]); }
-						dst += padding;
-					}
-				}
+		}
+		else if (pitch == width + padding) {
+			uint8 *dst = pixels;
+			for (int y = height; y > 0; y--) {
+				for (int x = width; x > 0; x--) { *dst++ = *(uint8 *)(&_paletteHWMapped[*src++]); }
+				dst += padding;
+			}
+		}
 		SDL_UnlockTexture(_bufferTexture);
 	}
 	
@@ -157,8 +155,11 @@ void renderer_draw() {
 
 void renderer_close() {
 	SDL_FreeFormat(_bufferTextureFormat);
+	_bufferTextureFormat = NULL;
 	SDL_DestroyTexture(_bufferTexture);
+	_bufferTexture = NULL;
 	SDL_DestroyRenderer(_renderer);
+	_renderer = NULL;
 }
 
 void renderer_update_palette() {

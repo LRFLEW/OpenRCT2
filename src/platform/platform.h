@@ -117,6 +117,8 @@ void platform_start_text_input(utf8 *buffer, int max_length);
 void platform_stop_text_input();
 void platform_get_date(rct2_date *out_date);
 void platform_get_time(rct2_time *out_time);
+void platform_create_window();
+void platform_close_window();
 
 // Platform specific definitions
 void platform_get_exe_path(utf8 *outPath);

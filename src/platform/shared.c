@@ -65,7 +65,6 @@ static const int _fullscreen_modes[] = { 0, SDL_WINDOW_FULLSCREEN, SDL_WINDOW_FU
 static unsigned int _lastGestureTimestamp;
 static float _gestureRadius;
 
-static void platform_create_window();
 static void platform_load_cursors();
 static void platform_unload_cursors();
 
@@ -520,7 +519,7 @@ void platform_process_messages()
 	gKeysState = SDL_GetKeyboardState(&numKeys);
 }
 
-static void platform_close_window()
+void platform_close_window()
 {
 	if (gWindow != NULL)
 		SDL_DestroyWindow(gWindow);
@@ -537,7 +536,7 @@ void platform_init()
 	video_init();
 }
 
-static void platform_create_window()
+void platform_create_window()
 {
 	int width, height;
 
