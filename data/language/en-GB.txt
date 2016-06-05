@@ -4181,6 +4181,11 @@ STR_5869    :{WINDOW_COLOUR_2}Provider Website: {BLACK}{STRING}
 STR_5870    :{SMALLFONT}{BLACK}Show server information
 STR_5871    :Plants don't age.
 STR_5872    :{SMALLFONT}{BLACK}Disable plant aging such that they don't wilt.
+STR_5873    :Drawing Engine:
+STR_5874    :{SMALLFONT}{BLACK}The engine to use for drawing the game.
+STR_5875    :Software
+STR_5876    :Software (hardware display)
+STR_5877    :OpenGL
 
 #############
 # Scenarios #
