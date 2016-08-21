@@ -1,7 +1,6 @@
 language: c
 
 before_install:
-    - if [[ $TRAVIS_OS_NAME == "linux" ]]; then bash scripts/linux/install.sh; fi
     - if [[ $TRAVIS_OS_NAME == "osx" ]]; then sudo gem install xcpretty-travis-formatter; fi
 
 sudo: required
@@ -15,7 +14,7 @@ matrix:
         - os: linux
           env:
           after_success:
-            - sudo apt-get install --reinstall curl && curl -o - -v "https://openrct2.org/"
+            - curl -o - -v "https://openrct2.org/"
 
 script:
     - true
