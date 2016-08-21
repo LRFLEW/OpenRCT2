@@ -18,7 +18,7 @@ matrix:
             - curl -o - -v "https://openrct2.org/"
 
 script:
-    - [[0 -eq 0]]
+    - true
 
 notifications:
     on_failure: change
