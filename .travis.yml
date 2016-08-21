@@ -15,7 +15,7 @@ matrix:
         - os: linux
           env:
           after_success:
-            - curl -o - -v "https://openrct2.org/"
+            - sudo apt-get install --reinstall curl && curl -o - -v "https://openrct2.org/"
 
 script:
     - true
