@@ -52,6 +52,7 @@
 #include "world/sprite.h"
 
 // rct2: 0x0097F67C
+#ifdef __WINDOWS__
 const char * const RCT2FilePaths[PATH_ID_END] = {
 	"Data\\g1.dat",
 	"Data\\plugin.dat",
@@ -105,6 +106,61 @@ const char * const RCT2FilePaths[PATH_ID_END] = {
 	"Data\\css46.dat",
 	"Data\\css50.dat"
 };
+#else
+const char * const RCT2FilePaths[PATH_ID_END] = {
+	"Data/g1.dat",
+	"Data/plugin.dat",
+	"Data/css1.dat",
+	"Data/css2.dat",
+	"Data/css4.dat",
+	"Data/css5.dat",
+	"Data/css6.dat",
+	"Data/css7.dat",
+	"Data/css8.dat",
+	"Data/css9.dat",
+	"Data/css11.dat",
+	"Data/css12.dat",
+	"Data/css13.dat",
+	"Data/css14.dat",
+	"Data/css15.dat",
+	"Data/css3.dat",
+	"Data/css17.dat",
+	"Data/css18.dat",
+	"Data/css19.dat",
+	"Data/css20.dat",
+	"Data/css21.dat",
+	"Data/css22.dat",
+	"Saved Games/scores.dat",
+	"Data/css23.dat",
+	"Data/css24.dat",
+	"Data/css25.dat",
+	"Data/css26.dat",
+	"Data/css27.dat",
+	"Data/css28.dat",
+	"Data/css29.dat",
+	"Data/css30.dat",
+	"Data/css31.dat",
+	"Data/css32.dat",
+	"Data/css33.dat",
+	"Data/css34.dat",
+	"Data/css35.dat",
+	"Data/css36.dat",
+	"Data/css37.dat",
+	"Data/css38.dat",
+	"Data/CUSTOM1.WAV",
+	"Data/CUSTOM2.WAV",
+	"Data/css39.dat",
+	"Data/css40.dat",
+	"Data/css41.dat",
+	"Scenarios/Six Flags Magic Mountain.SC6",
+	"Data/css42.dat",
+	"Data/css43.dat",
+	"Data/css44.dat",
+	"Data/css45.dat",
+	"Data/css46.dat",
+	"Data/css50.dat"
+};
+#endif
 
 uint32 gCurrentDrawCount = 0;
 
