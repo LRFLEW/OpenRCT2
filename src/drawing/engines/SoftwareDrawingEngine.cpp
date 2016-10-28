@@ -202,6 +202,7 @@ private:
     // Steam overlay checking
     uint32  _pixelBeforeOverlay     = 0;
     uint32  _pixelAfterOverlay      = 0;
+	uint32  _pixelCurrentOverlay    = 0;
     bool    _overlayActive          = false;
     bool    _pausedBeforeOverlay    = false;
 
@@ -702,14 +703,17 @@ private:
 #endif
         SDL_RenderCopy(_sdlRenderer, _screenTexture, nullptr, nullptr);
 
-        if (gSteamOverlayActive && gConfigGeneral.steam_overlay_pause)
+		bool overlayEnabled = platform_check_steam_overlay_enabled();
+        if (overlayEnabled && gConfigGeneral.steam_overlay_pause)
         {
             OverlayPreRenderCheck();
-        }
+		} else {
+			_pixelCurrentOverlay = 0;
+		}
 
         SDL_RenderPresent(_sdlRenderer);
 
-        if (gSteamOverlayActive && gConfigGeneral.steam_overlay_pause)
+        if (overlayEnabled && gConfigGeneral.steam_overlay_pause)
         {
             OverlayPostRenderCheck();
         }
@@ -772,12 +776,15 @@ private:
     // Should be called before SDL_RenderPresent to capture frame buffer before Steam overlay is drawn.
     void OverlayPreRenderCheck()
     {
-        ReadCentrePixel(&_pixelBeforeOverlay);
+		_pixelBeforeOverlay = _pixelCurrentOverlay;
+        ReadCentrePixel(&_pixelCurrentOverlay);
     }
 
     // Should be called after SDL_RenderPresent, when Steam overlay has had the chance to be drawn.
     void OverlayPostRenderCheck()
     {
+		if (_pixelBeforeOverlay == 0) return;
+		
         ReadCentrePixel(&_pixelAfterOverlay);
 
         // Detect an active Steam overlay by checking if the center pixel is changed by the gray fade.

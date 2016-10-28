@@ -24,11 +24,6 @@
 #include "../localisation/language.h"
 #include "../config.h"
 
-bool platform_check_steam_overlay_attached() {
-	STUB();
-	return false;
-}
-
 void platform_get_exe_path(utf8 *outPath, size_t outSize)
 {
 	if (outSize == 0) return;

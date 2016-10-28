@@ -123,8 +123,6 @@ extern SDL_Window *gWindow;
 
 extern SDL_Color gPalette[256];
 
-extern bool gSteamOverlayActive;
-
 // Platform shared definitions
 void platform_update_fullscreen_resolutions();
 void platform_get_closest_resolution(int inWidth, int inHeight, int *outWidth, int *outHeight);
@@ -192,7 +190,8 @@ uint8 platform_get_locale_measurement_format();
 uint8 platform_get_locale_temperature_format();
 bool platform_get_font_path(TTFFontDescriptor *font, utf8 *buffer, size_t size);
 
-bool platform_check_steam_overlay_attached();
+void platform_check_steam_overlay_init();
+bool platform_check_steam_overlay_enabled();
 
 datetime64 platform_get_datetime_now_utc();
 

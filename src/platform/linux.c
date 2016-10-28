@@ -19,7 +19,6 @@
 #ifdef __LINUX__
 
 #include <ctype.h>
-#include <dlfcn.h>
 #include <errno.h>
 #include <fontconfig/fontconfig.h>
 #include <fnmatch.h>
@@ -30,19 +29,6 @@
 #include "../localisation/string_ids.h"
 #include "../util/util.h"
 #include "platform.h"
-
-// See http://syprog.blogspot.ru/2011/12/listing-loaded-shared-objects-in-linux.html
-struct lmap {
-	void* base_address;
-	char* path;
-	void* unused;
-	struct lmap *next, *prev;
-};
-
-struct dummy {
-	void* pointers[3];
-	struct dummy* ptr;
-};
 
 typedef enum { DT_NONE, DT_KDIALOG, DT_ZENITY } dialog_type;
 
@@ -65,26 +51,6 @@ void platform_get_exe_path(utf8 *outPath, size_t outSize)
 	*exeDelimiter = '\0';
 
 	safe_strcpy(outPath, exePath, outSize);
-}
-
-bool platform_check_steam_overlay_attached() {
-	void* processHandle = dlopen(NULL, RTLD_NOW);
-
-	struct dummy* p = (struct dummy*) processHandle;
-	p = p->ptr;
-
-	struct lmap* pl = (struct lmap*) p->ptr;
-
-	while (pl != NULL) {
-		if (strstr(pl->path, "gameoverlayrenderer.so") != NULL) {
-			dlclose(processHandle);
-			return true;
-		}
-		pl = pl->next;
-	}
-	dlclose(processHandle);
-
-	return false;
 }
 
 /**

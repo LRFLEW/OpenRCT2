@@ -1062,7 +1062,7 @@ console_command console_command_table[] = {
 	{ "reset_user_strings", cc_reset_user_strings, "Resets all user-defined strings, to fix incorrectly occurring 'Chosen name in use already' errors.", "reset_user_strings" },
 	{ "fix_banner_count", cc_fix_banner_count, "Fixes incorrectly appearing 'Too many banners' error by marking every banner entry without a map element as null.", "fix_banner_count" },
 	{ "rides", cc_rides, "Ride management.", "rides <subcommand>" },
-	{ "staff", cc_staff, "Staff management.", "staff <subcommand>"},
+	{ "staff", cc_staff, "Staff management.", "staff <subcommand>" },
 };
 
 static int cc_windows(const utf8 **argv, int argc) {

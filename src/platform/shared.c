@@ -57,8 +57,6 @@ SDL_PixelFormat *gBufferTextureFormat = NULL;
 SDL_Color gPalette[256];
 uint32 gPaletteHWMapped[256];
 
-bool gSteamOverlayActive = false;
-
 static const int _fullscreen_modes[] = { 0, SDL_WINDOW_FULLSCREEN, SDL_WINDOW_FULLSCREEN_DESKTOP };
 static unsigned int _lastGestureTimestamp;
 static float _gestureRadius;
@@ -623,8 +621,7 @@ static void platform_create_window()
 	platform_update_fullscreen_resolutions();
 	platform_set_fullscreen_mode(gConfigGeneral.fullscreen_mode);
 
-	// Check if steam overlay renderer is loaded into the process
-	gSteamOverlayActive = platform_check_steam_overlay_attached();
+	platform_check_steam_overlay_init();
 	platform_trigger_resize();
 }
 

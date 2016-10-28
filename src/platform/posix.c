@@ -17,6 +17,7 @@
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 
 #include <dirent.h>
+#include <dlfcn.h>
 #include <errno.h>
 #include <fnmatch.h>
 #include <libgen.h>
@@ -44,6 +45,20 @@
 
 utf8 _userDataDirectoryPath[MAX_PATH] = { 0 };
 utf8 _openrctDataDirectoryPath[MAX_PATH] = { 0 };
+
+
+static bool (* _SteamIsOverlayEnabled)() = NULL;
+static bool no_stub() { return false; }
+
+void platform_check_steam_overlay_init() {
+	void *handle = dlopen(NULL, RTLD_NOW);
+	_SteamIsOverlayEnabled = dlsym(handle, "IsOverlayEnabled");
+	if (_SteamIsOverlayEnabled == NULL) _SteamIsOverlayEnabled = &no_stub;
+}
+
+bool platform_check_steam_overlay_enabled() {
+	return _SteamIsOverlayEnabled();
+}
 
 /**
  * The function that is called directly from the host application (rct2.exe)'s WinMain.
