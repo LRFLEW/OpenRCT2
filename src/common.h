@@ -25,10 +25,12 @@
 #define SafeDelete(x) do { delete (x); (x) = nullptr; } while (0)
 #define SafeDeleteArray(x) do { delete[] (x); (x) = nullptr; } while (0)
 
-#ifndef interface
-	#define interface struct
+#ifdef __cplusplus
+	#ifndef interface
+		#define interface struct
+	#endif
+	#define abstract = 0
 #endif
-#define abstract = 0
 
 #if defined(__i386__) || defined(_M_IX86)
 #define PLATFORM_X86

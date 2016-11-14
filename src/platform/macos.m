@@ -18,6 +18,7 @@
 
 @import AppKit;
 @import Foundation;
+
 #include <mach-o/dyld.h>
 #include "platform.h"
 #include "../util/util.h"
@@ -267,6 +268,39 @@ uint8 platform_get_locale_measurement_format()
 		}
 		
 		return MEASUREMENT_FORMAT_IMPERIAL;
+	}
+}
+
+@interface RCT2MacUrlHandle : NSObject
+@end
+
+@implementation RCT2MacUrlHandle
+
+- (void)handleGetUrlEvent:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
+{
+	const char *url = [[event paramDescriptorForKeyword:keyDirectObject] stringValue].UTF8String;
+	
+	SDL_Event sdl_event;
+	sdl_event.user.type = gOpenRCT2EventTypesStart + OPENRCT2_EVENT_OPEN_SCHEME;
+	sdl_event.user.code = 0;
+	sdl_event.user.data1 = _strdup(url);
+	sdl_event.user.data2 = NULL;
+	
+	SDL_PushEvent(&sdl_event);
+}
+
+@end
+
+static RCT2MacUrlHandle *macUrlHandle;
+
+bool platform_setup_uri_protocol()
+{
+	@autoreleasepool {
+		macUrlHandle = [[RCT2MacUrlHandle alloc] init];
+		[[NSAppleEventManager sharedAppleEventManager] setEventHandler:macUrlHandle
+														   andSelector:@selector(handleGetUrlEvent:withReplyEvent:)
+														 forEventClass:kInternetEventClass andEventID:kAEGetURL];
+		return true;
 	}
 }
 

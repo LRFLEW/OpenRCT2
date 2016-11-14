@@ -304,6 +304,8 @@ bool rct2_open_file(const char *path);
 
 uint32 get_file_extension_type(const utf8 *path);
 
+int HandleUri(const utf8 * uri);
+
 #ifdef __cplusplus
 }
 #endif

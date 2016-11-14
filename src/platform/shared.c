@@ -27,6 +27,7 @@
 #include "../interface/window.h"
 #include "../localisation/currency.h"
 #include "../localisation/localisation.h"
+#include "../network/network.h"
 #include "../openrct2.h"
 #include "../title.h"
 #include "../util/util.h"
@@ -58,6 +59,7 @@ SDL_Color gPalette[256];
 uint32 gPaletteHWMapped[256];
 
 bool gSteamOverlayActive = false;
+Uint32 gOpenRCT2EventTypesStart;
 
 static const int _fullscreen_modes[] = { 0, SDL_WINDOW_FULLSCREEN, SDL_WINDOW_FULLSCREEN_DESKTOP };
 static unsigned int _lastGestureTimestamp;
@@ -548,6 +550,26 @@ void platform_process_messages()
 			window_update_textbox();
 			break;
 		default:
+			if (e.type >= gOpenRCT2EventTypesStart) {
+				switch (e.type - gOpenRCT2EventTypesStart) {
+#ifndef DISABLE_NETWORK
+				case OPENRCT2_EVENT_OPEN_SCHEME:
+					HandleUri((const utf8 *) e.user.data1);
+					free(e.user.data1);
+					
+					if (gNetworkStart == NETWORK_MODE_CLIENT) {
+						if (gNetworkStartPort == 0) {
+							gNetworkStartPort = gConfigNetwork.default_port;
+						}
+						
+						network_begin_client(gNetworkStartHost, gNetworkStartPort);
+					}
+					break;
+#endif
+				default:
+					break;
+				}
+			}
 			break;
 		}
 	}
@@ -578,6 +600,8 @@ void platform_init()
 	gPalette[255].r = 255;
 	gPalette[255].g = 255;
 	gPalette[255].b = 255;
+	
+	gOpenRCT2EventTypesStart = SDL_RegisterEvents(OPENRCT2_EVENT_COUNT);
 }
 
 static void platform_create_window()

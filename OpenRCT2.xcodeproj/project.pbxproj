@@ -403,6 +403,7 @@
 		D44272A51CC81B3200D84D28 /* particle.c in Sources */ = {isa = PBXBuildFile; fileRef = D44271EF1CC81B3200D84D28 /* particle.c */; };
 		D44272A61CC81B3200D84D28 /* scenery.c in Sources */ = {isa = PBXBuildFile; fileRef = D44271F01CC81B3200D84D28 /* scenery.c */; };
 		D44272A71CC81B3200D84D28 /* sprite.c in Sources */ = {isa = PBXBuildFile; fileRef = D44271F21CC81B3200D84D28 /* sprite.c */; };
+		D447ECBE1DD987F9002D99C6 /* UriHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D447ECBD1DD987F9002D99C6 /* UriHandler.cpp */; };
 		D45A38BC1CF3006400659A24 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D45A38B31CF3006400659A24 /* libcrypto.dylib */; };
 		D45A38BE1CF3006400659A24 /* libjansson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D45A38B51CF3006400659A24 /* libjansson.dylib */; };
 		D45A38C01CF3006400659A24 /* libSDL2_ttf.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D45A38B71CF3006400659A24 /* libSDL2_ttf.dylib */; };
@@ -941,6 +942,7 @@
 		D44271F21CC81B3200D84D28 /* sprite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sprite.c; sourceTree = "<group>"; };
 		D44271F31CC81B3200D84D28 /* sprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sprite.h; sourceTree = "<group>"; };
 		D44271F41CC81B3200D84D28 /* water.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = water.h; sourceTree = "<group>"; };
+		D447ECBD1DD987F9002D99C6 /* UriHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UriHandler.cpp; sourceTree = "<group>"; usesTabs = 0; };
 		D45A38B31CF3006400659A24 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcrypto.dylib; sourceTree = "<group>"; };
 		D45A38B41CF3006400659A24 /* libfreetype.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfreetype.dylib; sourceTree = "<group>"; };
 		D45A38B51CF3006400659A24 /* libjansson.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjansson.dylib; sourceTree = "<group>"; };
@@ -1538,6 +1540,7 @@
 				D44270D91CC81B3200D84D28 /* RootCommands.cpp */,
 				D44270DA1CC81B3200D84D28 /* ScreenshotCommands.cpp */,
 				D44270DB1CC81B3200D84D28 /* SpriteCommands.cpp */,
+				D447ECBD1DD987F9002D99C6 /* UriHandler.cpp */,
 			);
 			path = cmdline;
 			sourceTree = "<group>";
@@ -2258,7 +2261,7 @@
 		D497D0701C20FD52002BF46A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = OpenRCT2;
 				TargetAttributes = {
 					C64FDA5C1D6D99F400F259B9 = {
@@ -2804,6 +2807,7 @@
 				D44272781CC81B3200D84D28 /* player.c in Sources */,
 				C686F9161CDBC3B7009F9BFC /* lay_down_roller_coaster.c in Sources */,
 				D44272991CC81B3200D84D28 /* balloon.c in Sources */,
+				D447ECBE1DD987F9002D99C6 /* UriHandler.cpp in Sources */,
 				D442727C1CC81B3200D84D28 /* ride_construction.c in Sources */,
 				D442724A1CC81B3200D84D28 /* track_data.c in Sources */,
 				D442725C1CC81B3200D84D28 /* editor_main.c in Sources */,

@@ -25,8 +25,6 @@ extern "C"
     #include "../openrct2.h"
 }
 
-static exitcode_t HandleUri(const utf8 * uri);
-
 exitcode_t CommandLine::HandleCommandUri(CommandLineArgEnumerator * enumerator)
 {
     const utf8 * uri;
@@ -34,8 +32,8 @@ exitcode_t CommandLine::HandleCommandUri(CommandLineArgEnumerator * enumerator)
     {
         if (String::StartsWith(uri, "openrct2://"))
         {
-            const utf8 * uriCommand = uri + 11;
-            return HandleUri(uriCommand);
+            const utf8 * uriCommand = uri;
+            return (exitcode_t) HandleUri(uriCommand);
         }
     }
 
@@ -43,10 +41,12 @@ exitcode_t CommandLine::HandleCommandUri(CommandLineArgEnumerator * enumerator)
     return EXITCODE_FAIL;
 }
 
-static exitcode_t HandleUri(const utf8 * uri)
+extern "C"
+int HandleUri(const utf8 * uri)
 {
+    Guard::Assert(String::StartsWith(uri, "openrct2://"));
     utf8 * * args;
-    size_t numArgs = String::Split(&args, uri, '/');
+    size_t numArgs = String::Split(&args, uri + 11, '/');
     if (numArgs > 0)
     {
         utf8 * arg = args[0];
