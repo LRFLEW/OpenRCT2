@@ -32,6 +32,10 @@ enum {
 	STARTUP_ACTION_EDIT
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The exit code for OpenRCT2 when it exits. */
 extern int gExitCode;
 
@@ -64,5 +68,9 @@ void openrct2_reset_object_tween_locations();
 bool openrct2_setup_rct2_segment();
 
 int cmdline_run(const char **argv, int argc);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

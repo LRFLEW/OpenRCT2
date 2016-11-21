@@ -33,7 +33,7 @@
 #include "platform/crash.h"
 #include "platform/platform.h"
 #include "ride/ride.h"
-#include "title.h"
+#include "title/TitleScreen.h"
 #include "title/TitleSequenceManager.h"
 #include "util/sawyercoding.h"
 #include "util/util.h"
