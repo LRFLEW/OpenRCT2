@@ -206,6 +206,7 @@ bool platform_ensure_directory_exists(const utf8 *path)
 	return true;
 }
 
+/*
 bool platform_directory_delete(const utf8 *path)
 {
 	log_verbose("Recursively deleting directory %s", path);
@@ -260,6 +261,7 @@ bool platform_directory_delete(const utf8 *path)
 
 	return true;
 }
+ */
 
 bool platform_lock_single_instance()
 {

@@ -214,6 +214,7 @@ bool platform_ensure_directory_exists(const utf8 *path)
 	return success == TRUE;
 }
 
+/*
 bool platform_directory_delete(const utf8 *path)
 {
 	wchar_t pszFrom[MAX_PATH];
@@ -239,6 +240,7 @@ bool platform_directory_delete(const utf8 *path)
 	sint32 ret = SHFileOperationW(&fileop);
 	return (ret == 0);
 }
+ */
 
 bool platform_lock_single_instance()
 {
