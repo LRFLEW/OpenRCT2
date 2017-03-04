@@ -27,6 +27,7 @@
 #include "core/MemoryStream.h"
 #include "core/String.hpp"
 #include "FileClassifier.h"
+#include "interface/Scripting.h"
 #include "network/network.h"
 #include "object/ObjectManager.h"
 #include "object/ObjectRepository.h"
@@ -75,10 +76,11 @@ namespace OpenRCT2
         IUiContext * const              _uiContext = nullptr;
 
         // Services
-        IObjectRepository *         _objectRepository = nullptr;
-        IObjectManager *            _objectManager = nullptr;
-        ITrackDesignRepository *    _trackDesignRepository = nullptr;
-        IScenarioRepository *       _scenarioRepository = nullptr;
+        IObjectRepository *         _objectRepository       = nullptr;
+        IObjectManager *            _objectManager          = nullptr;
+        ITrackDesignRepository *    _trackDesignRepository  = nullptr;
+        IScenarioRepository *       _scenarioRepository     = nullptr;
+        IScriptEngine *             _scriptEngine           = nullptr;
 
         bool _isWindowMinimised = false;
         uint32 _lastTick = 0;
@@ -125,6 +127,11 @@ namespace OpenRCT2
         IUiContext * GetUiContext() override
         {
             return _uiContext;
+        }
+
+        IScriptEngine * GetScriptEngine() override
+        {
+            return _scriptEngine;
         }
 
         sint32 RunOpenRCT2(int argc, char * * argv) override

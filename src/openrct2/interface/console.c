@@ -42,6 +42,7 @@
 #include "../world/park.h"
 #include "../world/scenery.h"
 #include "console.h"
+#include "Scripting.h"
 #include "viewport.h"
 
 #define CONSOLE_BUFFER_SIZE 8192
@@ -1316,8 +1317,8 @@ static void console_write_all_commands()
 void console_execute(const utf8 *src)
 {
     console_writeline(src);
-
-    console_execute_silent(src);
+    scripting_console_execute(src);
+    // console_execute_silent(src);
 }
 
 void console_execute_silent(const utf8 *src)
