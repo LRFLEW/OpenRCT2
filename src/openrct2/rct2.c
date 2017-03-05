@@ -28,6 +28,7 @@
 #include "input.h"
 #include "interface/chat.h"
 #include "interface/console.h"
+#include "interface/Scripting.h"
 #include "interface/viewport.h"
 #include "intro.h"
 #include "localisation/date.h"
@@ -441,6 +442,7 @@ void rct2_update()
     twitch_update();
     chat_update();
     console_update();
+    script_engine_update();
 }
 
 /**

@@ -240,6 +240,7 @@ namespace OpenRCT2
             }
 
             chat_init();
+            _scriptEngine = CreateScriptEngine(_env);
 
             rct2_copy_original_user_files_over();
             return true;

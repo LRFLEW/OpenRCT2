@@ -17,11 +17,28 @@
 #pragma once
 
 #ifdef __cplusplus
+
+#include <string>
+
+interface IPlatformEnvironment;
+
+interface IScriptEngine
+{
+    virtual ~IScriptEngine() = default;
+    virtual void Update() abstract;
+    virtual void ConsoleEval(const std::string &s) abstract;
+};
+
+IScriptEngine * CreateScriptEngine(IPlatformEnvironment * env);
+
+#endif
+
+#ifdef __cplusplus
 extern "C"
 {
 #endif
-    void scripting_initialise();
     void scripting_console_execute(const utf8 * s);
+    void script_engine_update();
 #ifdef __cplusplus
 }
 #endif

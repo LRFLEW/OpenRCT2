@@ -18,6 +18,8 @@
 #include "../core/Exception.hpp"
 #include "../core/Memory.hpp"
 #include "../core/String.hpp"
+#include "../OpenRCT2.h"
+#include "Scripting.h"
 
 extern "C"
 {
@@ -68,13 +70,15 @@ static int bind_get_ride(duk_context * ctx)
     return 1;
 }
 
-class ScriptingContext
+class ScriptEngine final : public IScriptEngine
 {
 private:
+    IPlatformEnvironment * _env = nullptr;
     duk_context * _context = nullptr;
 
 public:
-    ScriptingContext()
+    ScriptEngine(IPlatformEnvironment * env) :
+        _env(env)
     {
         _context = duk_create_heap_default();
         if (_context == nullptr)
@@ -85,12 +89,17 @@ public:
         RegisterFunction("GetRide", bind_get_ride);
     }
 
-    ~ScriptingContext()
+    ~ScriptEngine() override
     {
         duk_destroy_heap(_context);
     }
 
-    void ConsoleEval(std::string s)
+    void Update() override
+    {
+
+    }
+
+    void ConsoleEval(const std::string &s) override
     {
         if (duk_peval_string(_context, s.c_str()) != 0)
         {
@@ -135,17 +144,27 @@ private:
     }
 };
 
-static ScriptingContext * _scriptingContext;
+IScriptEngine * CreateScriptEngine(IPlatformEnvironment * env)
+{
+    return new ScriptEngine(env);
+}
 
 extern "C"
 {
-    void scripting_initialise()
+    IScriptEngine * script_engine_get()
     {
-        _scriptingContext = new ScriptingContext();
+        return OpenRCT2::GetScriptEngine();
     }
 
     void scripting_console_execute(const utf8 * s)
     {
-        _scriptingContext->ConsoleEval(s);
+        auto scriptEngine = script_engine_get();
+        scriptEngine->ConsoleEval(s);
+    }
+
+    void script_engine_update()
+    {
+        auto scriptEngine = script_engine_get();
+        scriptEngine->Update();
     }
 }
