@@ -15,17 +15,59 @@
 #pragma endregion
 
 #include <../duktape/duktape.h>
+#include "../core/Console.hpp"
 #include "../core/Exception.hpp"
+#include "../core/File.h"
+#include "../core/FileScanner.h"
 #include "../core/Memory.hpp"
+#include "../core/Path.hpp"
 #include "../core/String.hpp"
 #include "../OpenRCT2.h"
+#include "../PlatformEnvironment.h"
 #include "Scripting.h"
 
 extern "C"
 {
     #include "../localisation/localisation.h"
+    #include "../management/finance.h"
     #include "../ride/ride.h"
     #include "console.h"
+}
+
+static int bind_console_log(duk_context * ctx)
+{
+    IScriptEngine * engine = OpenRCT2::GetScriptEngine();
+
+    sint32 numArgs = duk_get_top(ctx);
+    if (numArgs == 0)
+    {
+        return DUK_RET_TYPE_ERROR;
+    }
+
+    std::string s = duk_safe_to_string(ctx, 0);
+    Console::WriteLine("script: %s", s.c_str());
+    engine->ConsoleWriteLine(s);
+    return 1;
+}
+
+static int bind_park_money_get(duk_context * ctx)
+{
+    money32 cash = finance_get_current_cash();
+    duk_push_int(ctx, cash);
+    return 1;
+}
+
+static int bind_park_money_set(duk_context * ctx)
+{
+    sint32 numArgs = duk_get_top(ctx);
+    if (numArgs == 0)
+    {
+        return DUK_RET_TYPE_ERROR;
+    }
+
+    money32 cash = duk_to_int(ctx, 0);
+    finance_set_current_cash(cash);
+    return 1;
 }
 
 static int bind_get_ride(duk_context * ctx)
@@ -75,6 +117,7 @@ class ScriptEngine final : public IScriptEngine
 private:
     IPlatformEnvironment * _env = nullptr;
     duk_context * _context = nullptr;
+    bool _initialised = false;
 
 public:
     ScriptEngine(IPlatformEnvironment * env) :
@@ -85,8 +128,6 @@ public:
         {
             throw Exception("Unable to initialise duktape context.");
         }
-
-        RegisterFunction("GetRide", bind_get_ride);
     }
 
     ~ScriptEngine() override
@@ -96,7 +137,24 @@ public:
 
     void Update() override
     {
+        if (!_initialised)
+        {
+            Initialise();
+        }
 
+        if (duk_get_global_string(_context, "context"))
+        {
+            if (duk_get_prop_string(_context, -1, "onTick") && duk_is_callable(_context, -1))
+            {
+                if (duk_pcall(_context, 0) != DUK_EXEC_SUCCESS)
+                {
+                    std::string result = std::string(duk_safe_to_string(_context, -1));
+                    ConsoleWriteLineError(result);
+                }
+            }
+            duk_pop(_context);
+        }
+        duk_pop(_context);
     }
 
     void ConsoleEval(const std::string &s) override
@@ -123,14 +181,7 @@ public:
         duk_pop(_context);
     }
 
-private:
-    void RegisterFunction(const std::string s, duk_c_function function)
-    {
-        duk_push_c_function(_context, function, DUK_VARARGS);
-        duk_put_global_string(_context, s.c_str());
-    }
-
-    void ConsoleWriteLine(std::string s)
+    void ConsoleWriteLine(const std::string &s) override
     {
         utf8 * text = String::Duplicate(s.c_str());
         utf8_remove_format_codes(text, false);
@@ -138,8 +189,79 @@ private:
         Memory::Free(text);
     }
 
+private:
+    void Initialise()
+    {
+        InitialiseRuntime();
+        LoadScripts();
+        _initialised = true;
+    }
+
+    void InitialiseRuntime()
+    {
+        duk_idx_t objIdx;
+
+        objIdx = duk_push_object(_context);
+        duk_push_string(_context, "money");
+        duk_push_c_function(_context, bind_park_money_get, 0);
+        duk_push_c_function(_context, bind_park_money_set, 1);
+        duk_def_prop(_context, objIdx, DUK_DEFPROP_HAVE_GETTER |
+                                       DUK_DEFPROP_HAVE_SETTER);
+        duk_put_global_string(_context, "park");
+
+        objIdx = duk_push_object(_context);
+        duk_push_null(_context);
+        duk_put_prop_string(_context, objIdx, "onTick");
+        duk_put_global_string(_context, "context");
+
+        objIdx = duk_push_object(_context);
+        duk_push_c_function(_context, bind_console_log, DUK_VARARGS);
+        duk_put_prop_string(_context, objIdx, "log");
+        duk_put_global_string(_context, "console");
+
+        RegisterFunction("GetRide", bind_get_ride);
+    }
+
+    void LoadScripts()
+    {
+        std::string scriptsDirectory = _env->GetDirectoryPath(DIRBASE::USER, DIRID::SCRIPTS);
+        std::string pattern = Path::Combine(scriptsDirectory, "*.js");
+        auto * fileScanner = Path::ScanDirectory(pattern, true);
+        while (fileScanner->Next())
+        {
+            std::string scriptPath = fileScanner->GetPath();
+            LoadScript(scriptPath);
+        }
+        delete fileScanner;
+    }
+
+    void LoadScript(const std::string &path)
+    {
+        try
+        {
+            size_t fileSize;
+            void * fileData = File::ReadAllBytes(path, &fileSize);
+            duk_uint_t flags = DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NORESULT | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NOFILENAME;
+            duk_int_t result = duk_eval_raw(_context, (const char *)fileData, fileSize, flags);
+            if (result != DUK_ERR_NONE)
+            {
+                ConsoleEval("Error loading script: '" + path + "'");
+            }
+        }
+        catch (const Exception &)
+        {
+        }
+    }
+
+    void RegisterFunction(const std::string s, duk_c_function function)
+    {
+        duk_push_c_function(_context, function, DUK_VARARGS);
+        duk_put_global_string(_context, s.c_str());
+    }
+
     void ConsoleWriteLineError(std::string s)
     {
+        Console::Error::WriteLine("%s", s.c_str());
         console_writeline_error(s.c_str());
     }
 };

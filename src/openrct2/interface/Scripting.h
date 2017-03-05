@@ -27,6 +27,7 @@ interface IScriptEngine
     virtual ~IScriptEngine() = default;
     virtual void Update() abstract;
     virtual void ConsoleEval(const std::string &s) abstract;
+    virtual void ConsoleWriteLine(const std::string &s) abstract;
 };
 
 IScriptEngine * CreateScriptEngine(IPlatformEnvironment * env);

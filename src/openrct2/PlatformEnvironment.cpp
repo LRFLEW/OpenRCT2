@@ -153,6 +153,7 @@ const char * PlatformEnvironment::DirectoryNamesRCT2[] =
     "Saved Games",          // SAVE
     "Scenarios",            // SCENARIO
     nullptr,                // SCREENSHOT
+    nullptr,                // SCRIPTS
     nullptr,                // SEQUENCE
     nullptr,                // SHADER
     nullptr,                // THEME
@@ -171,6 +172,7 @@ const char * PlatformEnvironment::DirectoryNamesOpenRCT2[] =
     "save",                 // SAVE
     "scenario",             // SCENARIO
     "screenshot",           // SCREENSHOT
+    "scripts",              // SCRIPTS
     "sequence",             // SEQUENCE
     "shader",               // SHADER
     "themes",               // THEME

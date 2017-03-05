@@ -288,6 +288,13 @@ money32 finance_get_current_cash()
     return DECRYPT_MONEY(gCashEncrypted);
 }
 
+void finance_set_current_cash(money32 cash)
+{
+	gCashEncrypted = ENCRYPT_MONEY(cash);
+	window_invalidate_by_class(WC_FINANCES);
+	gToolbarDirtyFlags |= BTM_TB_DIRTY_FLAG_MONEY;
+}
+
 /**
  *
  *  rct2: 0x0069DFB3

@@ -43,6 +43,7 @@ namespace OpenRCT2
         SAVE,               // Contains saved games (SV6).
         SCENARIO,           // Contains scenarios (SC6).
         SCREENSHOT,         // Contains screenshots.
+        SCRIPTS,            // Contains scripts.
         SEQUENCE,           // Contains title sequences.
         SHADER,             // Contains OpenGL shaders.
         THEME,              // Contains interface themes.
