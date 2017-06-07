@@ -32,12 +32,17 @@ interface IScriptEngine
 
 IScriptEngine * CreateScriptEngine(IPlatformEnvironment * env);
 
+#else
+
+typedef struct IScriptEngine IScriptEngine;
+
 #endif
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+    IScriptEngine * script_engine_get();
     void scripting_console_execute(const utf8 * s);
     void script_engine_update();
 #ifdef __cplusplus

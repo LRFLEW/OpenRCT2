@@ -29,6 +29,7 @@ if (APPLE)
 endif ()
 
 # Third party libraries
+PKG_CHECK_MODULES(DUKTAPE REQUIRED duktape)
 PKG_CHECK_MODULES(JANSSON REQUIRED jansson>=2.5)
 PKG_CHECK_MODULES(LIBZIP REQUIRED libzip>=1.0)
 PKG_CHECK_MODULES(ZLIB REQUIRED zlib)
@@ -144,12 +145,14 @@ endif ()
 
 # Libraries
 if (STATIC)
-    target_link_libraries(${PROJECT} ${JANSSON_STATIC_LIBRARIES}
+    target_link_libraries(${PROJECT} ${DUKTAPE_STATIC_LIBRARIES}
+                                     ${JANSSON_STATIC_LIBRARIES}
                                      ${PNG_STATIC_LIBRARIES}
                                      ${ZLIB_STATIC_LIBRARIES}
                                      ${LIBZIP_STATIC_LIBRARIES})
 else ()
-    target_link_libraries(${PROJECT} ${JANSSON_LIBRARIES}
+    target_link_libraries(${PROJECT} ${DUKTAPE_LIBRARIES}
+                                     ${JANSSON_LIBRARIES}
                                      ${PNG_LIBRARIES}
                                      ${ZLIB_LIBRARIES}
                                      ${LIBZIP_LIBRARIES})
@@ -194,7 +197,8 @@ endif()
 
 # Includes
 target_include_directories(${PROJECT} SYSTEM PRIVATE ${LIBZIP_INCLUDE_DIRS})
-target_include_directories(${PROJECT} PRIVATE ${JANSSON_INCLUDE_DIRS}
+target_include_directories(${PROJECT} PRIVATE ${DUKTAPE_INCLUDE_DIRS}
+                                              ${JANSSON_INCLUDE_DIRS}
                                               ${PNG_INCLUDE_DIRS}
                                               ${ZLIB_INCLUDE_DIRS})
 if (NOT DISABLE_HTTP_TWITCH OR NOT DISABLE_NETWORK)

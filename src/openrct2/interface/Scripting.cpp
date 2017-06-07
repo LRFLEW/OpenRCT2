@@ -14,7 +14,13 @@
  *****************************************************************************/
 #pragma endregion
 
-#include <../duktape/duktape.h>
+#ifdef _WIN32
+    #include <../duktape/duktape.h>
+#else
+    #include <duktape.h>
+#endif
+
+#include "../Context.h"
 #include "../core/Console.hpp"
 #include "../core/Exception.hpp"
 #include "../core/File.h"
@@ -34,9 +40,11 @@ extern "C"
     #include "console.h"
 }
 
+using namespace OpenRCT2;
+
 static int bind_console_log(duk_context * ctx)
 {
-    IScriptEngine * engine = OpenRCT2::GetScriptEngine();
+    IScriptEngine * engine = GetContext()->GetScriptEngine();
 
     sint32 numArgs = duk_get_top(ctx);
     if (numArgs == 0)
@@ -275,7 +283,7 @@ extern "C"
 {
     IScriptEngine * script_engine_get()
     {
-        return OpenRCT2::GetScriptEngine();
+        return GetContext()->GetScriptEngine();
     }
 
     void scripting_console_execute(const utf8 * s)

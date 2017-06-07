@@ -67,6 +67,8 @@ enum
 
 #ifdef __cplusplus
 
+interface IScriptEngine;
+
 namespace OpenRCT2
 {
     interface IPlatformEnvironment;
