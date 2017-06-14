@@ -14,6 +14,7 @@
 *****************************************************************************/
 #pragma endregion
 
+#include <chrono>
 #include <exception>
 #include <memory>
 #include <string>
@@ -40,6 +41,7 @@
 #include "scenario/ScenarioRepository.h"
 #include "title/TitleScreen.h"
 #include "title/TitleSequenceManager.h"
+#include "thirdparty/linenoise.hpp"
 #include "ui/WindowManager.h"
 #include "Version.h"
 
@@ -351,10 +353,7 @@ namespace OpenRCT2
             }
 #endif // DISABLE_NETWORK
 
-            // if (gOpenRCT2Headless)
-            {
-                RunREPL();
-            }
+            RunREPL();
             RunGameLoop();
         }
 
@@ -362,12 +361,46 @@ namespace OpenRCT2
         {
             std::thread replThread ([this]() -> void
             {
-                char buffer[128];
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+                linenoise::SetMultiLine(true);
+                linenoise::SetHistoryMaxLen(32);
+
+                std::string prompt = "\033[32mopenrct2 $\x1b[0m ";
+                std::string current;
+                bool more = false;
                 while (true)
                 {
-                    printf("\033[32mopenrct2 $ \x1b[0m");
-                    fgets(buffer, sizeof(buffer), stdin);
-                    _scriptEngine->ConsoleEval(buffer);
+                    std::string line;
+                    std::string left = prompt;
+                    if (more) left = "\033[32m>\x1b[0m ";
+                    auto quit = linenoise::Readline(left.c_str(), line);
+                    if (quit) {
+                        _finished = true;
+                        break;
+                    }
+
+                    current += line;
+
+                    int indent = 0;
+                    for (char c : current)
+                    {
+                        if (c == '{') indent++;
+                        else if (c == '}') indent--;
+                    }
+
+                    if (indent == 0)
+                    {
+                        linenoise::AddHistory(current.c_str());
+                        _scriptEngine->ConsoleEval(current);
+                        current = "";
+                        more = false;
+                    }
+                    else
+                    {
+                        current += "\n";
+                        more = true;
+                    }
                 }
             });
             replThread.detach();
