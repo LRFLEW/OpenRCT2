@@ -176,7 +176,7 @@ public:
         else
         {
             auto type = duk_get_type(_context, -1);
-            if (type == DUK_TYPE_OBJECT)
+            if (type == DUK_TYPE_OBJECT && !duk_is_function(_context, -1))
             {
                 std::string result = duk_json_encode(_context, -1);
                 ConsoleWriteLine(result);
