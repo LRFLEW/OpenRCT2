@@ -17,6 +17,7 @@
 #include <exception>
 #include <memory>
 #include <string>
+#include <thread>
 #include "audio/AudioContext.h"
 #include "Context.h"
 #include "ui/UiContext.h"
@@ -350,7 +351,26 @@ namespace OpenRCT2
             }
 #endif // DISABLE_NETWORK
 
+            // if (gOpenRCT2Headless)
+            {
+                RunREPL();
+            }
             RunGameLoop();
+        }
+
+        void RunREPL()
+        {
+            std::thread replThread ([this]() -> void
+            {
+                char buffer[128];
+                while (true)
+                {
+                    printf("\033[32mopenrct2 $ \x1b[0m");
+                    fgets(buffer, sizeof(buffer), stdin);
+                    _scriptEngine->ConsoleEval(buffer);
+                }
+            });
+            replThread.detach();
         }
 
         bool ShouldRunVariableFrame()

@@ -196,6 +196,8 @@ public:
         utf8_remove_format_codes(text, false);
         console_writeline(text);
         Memory::Free(text);
+
+        Console::WriteLine("%s", s.c_str());
     }
 
 private:
