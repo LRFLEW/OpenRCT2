@@ -20,17 +20,23 @@
 
 #include <string>
 
-interface IPlatformEnvironment;
-
-interface IScriptEngine
+namespace OpenRCT2
 {
-    virtual ~IScriptEngine() = default;
-    virtual void Update() abstract;
-    virtual void ConsoleEval(const std::string &s) abstract;
-    virtual void ConsoleWriteLine(const std::string &s) abstract;
-};
+    interface IPlatformEnvironment;
 
-IScriptEngine * CreateScriptEngine(IPlatformEnvironment * env);
+    namespace Scripting
+    {
+        interface IScriptEngine
+        {
+            virtual ~IScriptEngine() = default;
+            virtual void Update() abstract;
+            virtual void ConsoleEval(const std::string &s) abstract;
+            virtual void ConsoleWriteLine(const std::string &s) abstract;
+        };
+
+        IScriptEngine * CreateScriptEngine(IPlatformEnvironment * env);
+    }
+}
 
 #else
 
@@ -41,8 +47,10 @@ typedef struct IScriptEngine IScriptEngine;
 #ifdef __cplusplus
 extern "C"
 {
-#endif
+    OpenRCT2::Scripting::IScriptEngine * script_engine_get();
+#else
     IScriptEngine * script_engine_get();
+#endif
     void scripting_console_execute(const utf8 * s);
     void script_engine_update();
 #ifdef __cplusplus

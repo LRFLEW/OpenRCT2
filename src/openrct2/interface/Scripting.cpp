@@ -41,6 +41,7 @@ extern "C"
 }
 
 using namespace OpenRCT2;
+using namespace OpenRCT2::Scripting;
 
 static int bind_console_log(duk_context * ctx)
 {
@@ -274,7 +275,7 @@ private:
     }
 };
 
-IScriptEngine * CreateScriptEngine(IPlatformEnvironment * env)
+IScriptEngine * OpenRCT2::Scripting::CreateScriptEngine(IPlatformEnvironment * env)
 {
     return new ScriptEngine(env);
 }

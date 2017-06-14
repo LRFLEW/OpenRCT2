@@ -67,16 +67,18 @@ enum
 
 #ifdef __cplusplus
 
-interface IScriptEngine;
-
 namespace OpenRCT2
 {
     interface IPlatformEnvironment;
-    interface IScriptEngine;
 
     namespace Audio
     {
         interface IAudioContext;
+    }
+
+    namespace Scripting
+    {
+        interface IScriptEngine;
     }
 
     namespace Ui
@@ -91,9 +93,9 @@ namespace OpenRCT2
     {
         virtual ~IContext() = default;
 
-        virtual Audio::IAudioContext *  GetAudioContext() abstract;
-        virtual Ui::IUiContext *        GetUiContext() abstract;
-        virtual IScriptEngine *         GetScriptEngine() abstract;
+        virtual Audio::IAudioContext *      GetAudioContext() abstract;
+        virtual Ui::IUiContext *            GetUiContext() abstract;
+        virtual Scripting::IScriptEngine *  GetScriptEngine() abstract;
 
         virtual sint32 RunOpenRCT2(int argc, char * * argv) abstract;
 
