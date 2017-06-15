@@ -117,6 +117,52 @@ static int bind_get_ride(duk_context * ctx)
         duk_put_prop_string(ctx, objidx, "intensity");
         duk_push_int(ctx, ride->nausea);
         duk_put_prop_string(ctx, objidx, "nausea");
+
+        duk_push_pointer(ctx, ride);
+        duk_put_prop_string(ctx, objidx, "@ride");
+
+        duk_push_string(ctx, "totalCustomers");
+        duk_push_c_function(ctx, [](duk_context * ctx2) -> int
+        {
+            duk_push_this(ctx2);
+            duk_get_prop_string(ctx2, -1, "@ride");
+            auto ride2 = (rct_ride *)duk_get_pointer(ctx2, -1);
+            if (ride2 != nullptr)
+            {
+                sint32 result = ride2->total_customers;
+                duk_push_int(ctx2, result);
+            }
+            else
+            {
+                duk_push_int(ctx2, 0);
+            }
+            return 1;
+        }, 0);
+        duk_push_c_function(ctx, [](duk_context * ctx2) -> int
+        {
+            duk_push_this(ctx2);
+            duk_get_prop_string(ctx2, -1, "@ride");
+            auto ride2 = (rct_ride *)duk_get_pointer(ctx2, -1);
+            if (ride2 != nullptr)
+            {
+                sint32 numArgs2 = duk_get_top(ctx2);
+                if (numArgs2 == 0)
+                {
+                    return DUK_RET_TYPE_ERROR;
+                }
+
+                sint32 value = duk_to_int(ctx2, 0);
+                ride2->total_customers = value;
+            }
+            else
+            {
+                duk_push_int(ctx2, 0);
+            }
+            return 1;
+        }, 1);
+        duk_def_prop(ctx, objidx, DUK_DEFPROP_HAVE_GETTER |
+                                  DUK_DEFPROP_HAVE_SETTER |
+                                  DUK_DEFPROP_SET_ENUMERABLE);
     }
     return 1;
 }
