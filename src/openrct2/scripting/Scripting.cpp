@@ -34,10 +34,10 @@
 
 extern "C"
 {
+    #include "../interface/console.h"
     #include "../localisation/localisation.h"
     #include "../management/finance.h"
     #include "../ride/ride.h"
-    #include "console.h"
 }
 
 using namespace OpenRCT2;

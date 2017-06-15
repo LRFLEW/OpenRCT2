@@ -29,7 +29,7 @@
 #include "core/MemoryStream.h"
 #include "core/String.hpp"
 #include "FileClassifier.h"
-#include "interface/Scripting.h"
+#include "scripting/Scripting.h"
 #include "network/network.h"
 #include "object/ObjectManager.h"
 #include "object/ObjectRepository.h"

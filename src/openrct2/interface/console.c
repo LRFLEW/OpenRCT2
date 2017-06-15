@@ -35,6 +35,7 @@
 #include "../rct2.h"
 #include "../ride/ride.h"
 #include "../ride/ride_data.h"
+#include "../scripting/Scripting.h"
 #include "../util/sawyercoding.h"
 #include "../util/util.h"
 #include "../Version.h"
@@ -42,7 +43,6 @@
 #include "../world/park.h"
 #include "../world/scenery.h"
 #include "console.h"
-#include "Scripting.h"
 #include "viewport.h"
 
 #define CONSOLE_BUFFER_SIZE 8192
