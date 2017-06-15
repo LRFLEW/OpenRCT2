@@ -30,6 +30,7 @@
 #include "../core/String.hpp"
 #include "../OpenRCT2.h"
 #include "../PlatformEnvironment.h"
+#include "Bindings.hpp"
 #include "Scripting.h"
 
 extern "C"
@@ -254,17 +255,39 @@ private:
         _initialised = true;
     }
 
+    template<duk_int_t (*TGetter)(), void (*TSetter)(duk_int_t)>
+    void RegisterProperty(duk_idx_t objIdx, const char * name)
+    {
+        duk_push_string(_context, name);
+        duk_push_c_function(_context, [](duk_context * ctx) -> int
+        {
+            duk_int_t value = TGetter();
+            duk_push_int(ctx, value);
+            return 1;
+        }, 0);
+        duk_push_c_function(_context, [](duk_context * ctx) -> int
+        {
+            sint32 numArgs = duk_get_top(ctx);
+            if (numArgs == 0)
+            {
+                return DUK_RET_TYPE_ERROR;
+            }
+
+            duk_int_t value = duk_to_int(ctx, 0);
+            TSetter(value);
+            return 1;
+        }, 1);
+        duk_def_prop(_context, objIdx, DUK_DEFPROP_HAVE_GETTER |
+                                       DUK_DEFPROP_HAVE_SETTER |
+                                       DUK_DEFPROP_SET_ENUMERABLE);
+    }
+
     void InitialiseRuntime()
     {
         duk_idx_t objIdx;
 
         objIdx = duk_push_object(_context);
-        duk_push_string(_context, "money");
-        duk_push_c_function(_context, bind_park_money_get, 0);
-        duk_push_c_function(_context, bind_park_money_set, 1);
-        duk_def_prop(_context, objIdx, DUK_DEFPROP_HAVE_GETTER |
-                                       DUK_DEFPROP_HAVE_SETTER |
-                                       DUK_DEFPROP_SET_ENUMERABLE);
+        RegisterProperty<finance_get_current_cash, finance_set_current_cash>(objIdx, "money");
         duk_put_global_string(_context, "park");
 
         objIdx = duk_push_object(_context);
@@ -277,10 +300,13 @@ private:
         duk_put_prop_string(_context, objIdx, "log");
         duk_put_global_string(_context, "console");
 
-        objIdx = duk_push_object(_context);
-        duk_push_c_function(_context, bind_get_ride, DUK_VARARGS);
-        duk_put_prop_string(_context, objIdx, "getRide");
-        duk_put_global_string(_context, "map");
+        Bindings::CreateMap(_context);
+        PutGlobal("map");
+    }
+
+    void PutGlobal(const char * name)
+    {
+        duk_put_global_string(_context, name);
     }
 
     void LoadScripts()

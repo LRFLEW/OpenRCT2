@@ -19,6 +19,7 @@
 #ifdef __cplusplus
 
 #include <string>
+#include "../common.h"
 
 namespace OpenRCT2
 {
