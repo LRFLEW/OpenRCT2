@@ -217,7 +217,8 @@ private:
         duk_push_c_function(_context, bind_park_money_get, 0);
         duk_push_c_function(_context, bind_park_money_set, 1);
         duk_def_prop(_context, objIdx, DUK_DEFPROP_HAVE_GETTER |
-                                       DUK_DEFPROP_HAVE_SETTER);
+                                       DUK_DEFPROP_HAVE_SETTER |
+                                       DUK_DEFPROP_SET_ENUMERABLE);
         duk_put_global_string(_context, "park");
 
         objIdx = duk_push_object(_context);
@@ -230,7 +231,10 @@ private:
         duk_put_prop_string(_context, objIdx, "log");
         duk_put_global_string(_context, "console");
 
-        RegisterFunction("GetRide", bind_get_ride);
+        objIdx = duk_push_object(_context);
+        duk_push_c_function(_context, bind_get_ride, DUK_VARARGS);
+        duk_put_prop_string(_context, objIdx, "getRide");
+        duk_put_global_string(_context, "map");
     }
 
     void LoadScripts()
