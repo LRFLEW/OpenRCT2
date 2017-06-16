@@ -20,6 +20,8 @@
 #include "../common.h"
 #include "map.h"
 
+typedef struct rct_peep rct_peep;
+
 #define DECRYPT_MONEY(money) ((money32)rol32((money) ^ 0xF4EC9621, 13))
 #define ENCRYPT_MONEY(money) ((money32)(ror32((money), 13) ^ 0xF4EC9621))
 

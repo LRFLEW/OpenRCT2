@@ -1,3 +1,4 @@
+#pragma region Copyright (c) 2014-2016 OpenRCT2 Developers
 /*****************************************************************************
  * OpenRCT2, an open source clone of Roller Coaster Tycoon 2.
  *
@@ -11,37 +12,26 @@
  *
  * A full copy of the GNU General Public License can be found in licence.txt
  *****************************************************************************/
+#pragma endregion
 
-// OpenRCT2 Scripting API definition file
+#include "../core/Math.hpp"
+#include "Bindings.hpp"
 
-export interface Console {
-    log(message?: any, ...optionalParams: any[]): void;
+extern "C"
+{
+    #include "../management/finance.h"
+    #include "../world/park.h"
 }
 
-export interface Context {
-    /**
-     * Called on every tick.
-     */
-    onTick: () => void;
-}
+namespace OpenRCT2 { namespace Scripting { namespace Bindings
+{
+    static duk_int_t GetRating() { return gParkRating; } 
+    static void SetRating(duk_int_t value) { gParkRating = Math::Clamp(0, value, 999); } 
 
-export interface Ride {
-    name: string;
-    excitement: number;
-    intensity: number;
-    nausea: number;
-    totalCustomers: number;
-}
-
-export interface Map {
-    getRide(id: number): Ride;
-}
-
-export interface Park {
-    cash: number;
-    rating: number;
-}
-
-declare var context: Context;
-declare var map: Map;
-declare var park: Park;
+    void CreatePark(duk_context * ctx)
+    {
+        auto objIdx = duk_push_object(ctx);
+        RegisterProperty<finance_get_current_cash, finance_set_current_cash>(ctx, objIdx, "cash");
+        RegisterProperty<GetRating, SetRating>(ctx, objIdx, "rating");
+    }
+} } }

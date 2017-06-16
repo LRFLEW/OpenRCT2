@@ -50,10 +50,38 @@ namespace OpenRCT2
             duk_put_prop_string(ctx, objIdx, name);
         }
 
+        template<duk_int_t (*TGetter)(), void (*TSetter)(duk_int_t)>
+        static void RegisterProperty(duk_context * ctx, duk_idx_t objIdx, const char * name)
+        {
+            duk_push_string(ctx, name);
+            duk_push_c_function(ctx, [](duk_context * ctx2) -> int
+            {
+                duk_int_t value = TGetter();
+                duk_push_int(ctx2, value);
+                return 1;
+            }, 0);
+            duk_push_c_function(ctx, [](duk_context * ctx2) -> int
+            {
+                sint32 numArgs = duk_get_top(ctx2);
+                if (numArgs == 0)
+                {
+                    return DUK_RET_TYPE_ERROR;
+                }
+
+                duk_int_t value = duk_to_int(ctx2, 0);
+                TSetter(value);
+                return 1;
+            }, 1);
+            duk_def_prop(ctx, objIdx, DUK_DEFPROP_HAVE_GETTER |
+                                      DUK_DEFPROP_HAVE_SETTER |
+                                      DUK_DEFPROP_SET_ENUMERABLE);
+        }
+
         namespace Bindings
         {
             void CreateMap(duk_context * ctx);
             void CreateRide(duk_context * ctx, rct_ride * ride);
+            void CreatePark(duk_context * ctx);
         }
     }
 }
