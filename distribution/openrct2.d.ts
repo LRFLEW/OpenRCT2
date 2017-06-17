@@ -37,9 +37,19 @@ export interface Map {
     getRide(id: number): Ride;
 }
 
+export type ParkMessageType =
+    "attraction" | "peep_on_attraction" | "peep" | "money" | "blank" | "research" | "guests" | "award" | "chart";
+
+export interface ParkMessage {
+    type: ParkMessageType;
+    text: string;
+}
+
 export interface Park {
     cash: number;
     rating: number;
+
+    postMessage(message: ParkMessage): void;
 }
 
 declare var context: Context;

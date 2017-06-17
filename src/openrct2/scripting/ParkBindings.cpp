@@ -14,12 +14,15 @@
  *****************************************************************************/
 #pragma endregion
 
+#include <array>
 #include "../core/Math.hpp"
+#include "../core/String.hpp"
 #include "Bindings.hpp"
 
 extern "C"
 {
     #include "../management/finance.h"
+    #include "../management/news_item.h"
     #include "../world/park.h"
 }
 
@@ -28,10 +31,52 @@ namespace OpenRCT2 { namespace Scripting { namespace Bindings
     static duk_int_t GetRating() { return gParkRating; } 
     static void SetRating(duk_int_t value) { gParkRating = Math::Clamp(0, value, 999); } 
 
+    static uint8 GetParkMessageType(const std::string &type)
+    {
+        static std::array<std::string, 9> TypeMapping =
+            { "attraction", "peep_on_attraction", "peep", "money", "blank", "research", "guests", "award", "chart" };
+
+        auto result = (uint8)NEWS_ITEM_NULL;
+        auto findResult = std::find(TypeMapping.begin(), TypeMapping.end(), type);
+        if (findResult != TypeMapping.end())
+        {
+            result = (uint8)(findResult - TypeMapping.begin()) + 1;
+        }
+        return result;
+    }
+
+    static duk_int_t PostMessage(duk_context * ctx)
+    {
+        sint32 numArgs = duk_get_top(ctx);
+        if (numArgs == 0)
+        {
+            return DUK_RET_TYPE_ERROR;
+        }
+
+        duk_get_prop_string(ctx, 0, "type");
+        duk_get_prop_string(ctx, 0, "text");
+        std::string text = String::ToStd(duk_get_string(ctx, -1));
+        std::string type = String::ToStd(duk_get_string(ctx, -2));
+        duk_pop_3(ctx);
+        duk_push_undefined(ctx);
+
+        auto parkMessageType = GetParkMessageType(type);
+        if (parkMessageType != NEWS_ITEM_NULL)
+        {
+            news_item_add_to_queue_raw(parkMessageType, text.c_str(), 0);
+            return 1;
+        }
+        else
+        {
+            return duk_error(ctx, DUK_ERR_TYPE_ERROR, "invalid type: %s", type.c_str());
+        }
+    }
+
     void CreatePark(duk_context * ctx)
     {
         auto objIdx = duk_push_object(ctx);
         RegisterProperty<finance_get_current_cash, finance_set_current_cash>(ctx, objIdx, "cash");
         RegisterProperty<GetRating, SetRating>(ctx, objIdx, "rating");
+        RegisterFunction(ctx, objIdx, "postMessage", PostMessage);
     }
 } } }
