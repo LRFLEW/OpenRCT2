@@ -56,3 +56,5 @@ namespace LanguagePackFactory
     ILanguagePack * FromFile(uint16 id, const utf8 * path);
     ILanguagePack * FromText(uint16 id, const utf8 * text);
 }
+
+std::string EncodeString(const std::string &s);

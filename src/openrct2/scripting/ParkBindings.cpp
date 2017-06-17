@@ -17,6 +17,7 @@
 #include <array>
 #include "../core/Math.hpp"
 #include "../core/String.hpp"
+#include "../localisation/LanguagePack.h"
 #include "Bindings.hpp"
 
 extern "C"
@@ -63,7 +64,8 @@ namespace OpenRCT2 { namespace Scripting { namespace Bindings
         auto parkMessageType = GetParkMessageType(type);
         if (parkMessageType != NEWS_ITEM_NULL)
         {
-            news_item_add_to_queue_raw(parkMessageType, text.c_str(), 0);
+            auto formattedText = EncodeString(text);
+            news_item_add_to_queue_raw(parkMessageType, formattedText.c_str(), 0);
             return 1;
         }
         else

@@ -14,6 +14,7 @@
  *****************************************************************************/
 #pragma endregion
 
+#include <sstream>
 #include <stack>
 #include "../core/Console.hpp"
 #include "../core/Memory.hpp"
@@ -252,4 +253,36 @@ rct_string_id language_get_object_override_string_id(const char * identifier, ui
     return _languageCurrent->GetObjectOverrideStringId(identifier, index);
 }
 
+}
+
+std::string EncodeString(const std::string &s)
+{
+    std::stringstream sb;
+    std::stringstream token;
+    bool inToken = false;
+    for (char c : s)
+    {
+        if (c == '{')
+        {
+            token.clear();
+            inToken = true;
+        }
+        else if (c == '}')
+        {
+            utf8 codepointBuffer[16] = { 0 };
+            uint32 code = format_get_code(token.str().c_str());
+            utf8_write_codepoint(codepointBuffer, code);
+            sb << codepointBuffer;
+            inToken = false;
+        }
+        else if (inToken)
+        {
+            token << c;
+        }
+        else
+        {
+            sb << c;
+        }
+    }
+    return sb.str();
 }
