@@ -38,11 +38,6 @@ typedef struct rct2_install_info rct2_install_info;
 #define PLATFORM_NEWLINE "\n"
 #endif
 
-#define SHIFT 0x100
-#define CTRL 0x200
-#define ALT 0x400
-#define CMD 0x800
-
 typedef struct resolution {
     sint32 width, height;
 } resolution_t;
