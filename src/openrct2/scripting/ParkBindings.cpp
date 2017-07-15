@@ -29,8 +29,17 @@ extern "C"
 
 namespace OpenRCT2 { namespace Scripting { namespace Bindings
 {
+    static duk_int_t GetCash() { return finance_get_current_cash(); }
+    static void SetCash(duk_int_t value) { finance_set_current_cash(value); }
+
     static duk_int_t GetRating() { return gParkRating; } 
-    static void SetRating(duk_int_t value) { gParkRating = Math::Clamp(0, value, 999); } 
+    static void SetRating(duk_int_t value) { gParkRating = Math::Clamp(0, value, 999); }
+
+    static duk_int_t GetBankLoan() { return gBankLoan; }
+    static void SetBankLoan(duk_int_t value) { gBankLoan = Math::Clamp(0, value, MONEY(1000000,00)); }
+
+    static duk_int_t GetMaxBankLoan() { return gMaxBankLoan; }
+    static void SetMaxBankLoan(duk_int_t value) { gMaxBankLoan = Math::Clamp(0, value, MONEY(1000000, 00)); }
 
     static uint8 GetParkMessageType(const std::string &type)
     {
@@ -77,8 +86,10 @@ namespace OpenRCT2 { namespace Scripting { namespace Bindings
     void CreatePark(duk_context * ctx)
     {
         auto objIdx = duk_push_object(ctx);
-        RegisterProperty<finance_get_current_cash, finance_set_current_cash>(ctx, objIdx, "cash");
+        RegisterProperty<GetCash, SetCash>(ctx, objIdx, "cash");
         RegisterProperty<GetRating, SetRating>(ctx, objIdx, "rating");
+        RegisterProperty<GetBankLoan, SetBankLoan>(ctx, objIdx, "bankLoan");
+        RegisterProperty<GetMaxBankLoan, SetMaxBankLoan>(ctx, objIdx, "maxBankLoan");
         RegisterFunction(ctx, objIdx, "postMessage", PostMessage);
     }
 } } }

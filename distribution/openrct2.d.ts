@@ -48,6 +48,8 @@ export interface ParkMessage {
 export interface Park {
     cash: number;
     rating: number;
+    bankLoan: number;
+    maxBankLoan: number;
 
     postMessage(message: ParkMessage): void;
 }
