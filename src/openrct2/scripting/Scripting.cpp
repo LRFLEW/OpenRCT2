@@ -14,11 +14,7 @@
  *****************************************************************************/
 #pragma endregion
 
-#ifdef _WIN32
-    #include <../duktape/duktape.h>
-#else
-    #include <duktape.h>
-#endif
+#include <duktape.h>
 
 #include "../Context.h"
 #include "../core/Console.hpp"
@@ -57,114 +53,6 @@ static int bind_console_log(duk_context * ctx)
     std::string s = duk_safe_to_string(ctx, 0);
     Console::WriteLine("script: %s", s.c_str());
     engine->ConsoleWriteLine(s);
-    return 1;
-}
-
-static int bind_park_money_get(duk_context * ctx)
-{
-    money32 cash = finance_get_current_cash();
-    duk_push_int(ctx, cash);
-    return 1;
-}
-
-static int bind_park_money_set(duk_context * ctx)
-{
-    sint32 numArgs = duk_get_top(ctx);
-    if (numArgs == 0)
-    {
-        return DUK_RET_TYPE_ERROR;
-    }
-
-    money32 cash = duk_to_int(ctx, 0);
-    finance_set_current_cash(cash);
-    return 1;
-}
-
-static int bind_get_ride(duk_context * ctx)
-{
-    sint32 numArgs = duk_get_top(ctx);
-    if (numArgs == 0)
-    {
-        return DUK_RET_TYPE_ERROR;
-    }
-
-    sint32 index = duk_to_number(ctx, 0);
-
-    rct_ride * ride = nullptr;
-    if (index >= 0 && index < MAX_RIDES)
-    {
-        ride = get_ride(index);
-        if (ride->type == RIDE_TYPE_NULL)
-        {
-            ride = nullptr;
-        }
-    }
-
-    if (ride == nullptr)
-    {
-        duk_push_null(ctx);
-    }
-    else
-    {
-        utf8 rideName[128];
-        format_string(rideName, sizeof(rideName), ride->name, &ride->name_arguments);
-
-        duk_idx_t objidx = duk_push_object(ctx);
-        duk_push_string(ctx, rideName);
-        duk_put_prop_string(ctx, objidx, "name");
-        duk_push_int(ctx, ride->excitement);
-        duk_put_prop_string(ctx, objidx, "excitement");
-        duk_push_int(ctx, ride->intensity);
-        duk_put_prop_string(ctx, objidx, "intensity");
-        duk_push_int(ctx, ride->nausea);
-        duk_put_prop_string(ctx, objidx, "nausea");
-
-        duk_push_pointer(ctx, ride);
-        duk_put_prop_string(ctx, objidx, "@ride");
-
-        duk_push_string(ctx, "totalCustomers");
-        duk_push_c_function(ctx, [](duk_context * ctx2) -> int
-        {
-            duk_push_this(ctx2);
-            duk_get_prop_string(ctx2, -1, "@ride");
-            auto ride2 = (rct_ride *)duk_get_pointer(ctx2, -1);
-            if (ride2 != nullptr)
-            {
-                sint32 result = ride2->total_customers;
-                duk_push_int(ctx2, result);
-            }
-            else
-            {
-                duk_push_int(ctx2, 0);
-            }
-            return 1;
-        }, 0);
-        duk_push_c_function(ctx, [](duk_context * ctx2) -> int
-        {
-            duk_push_this(ctx2);
-            duk_get_prop_string(ctx2, -1, "@ride");
-            auto ride2 = (rct_ride *)duk_get_pointer(ctx2, -1);
-            if (ride2 != nullptr)
-            {
-                sint32 numArgs2 = duk_get_top(ctx2);
-                if (numArgs2 == 0)
-                {
-                    return DUK_RET_TYPE_ERROR;
-                }
-
-                sint32 value = duk_to_int(ctx2, 0);
-                ride2->total_customers = value;
-            }
-            else
-            {
-                duk_push_int(ctx2, 0);
-            }
-            return 1;
-        }, 1);
-        duk_def_prop(ctx, objidx, DUK_DEFPROP_HAVE_GETTER |
-                                  DUK_DEFPROP_HAVE_SETTER |
-                                  DUK_DEFPROP_SET_ENUMERABLE);
-    }
     return 1;
 }
 

@@ -16,11 +16,7 @@
 
 #pragma once
 
-#ifdef _WIN32
-    #include <../duktape/duktape.h>
-#else
-    #include <duktape.h>
-#endif
+#include <duktape.h>
 
 #include "Scripting.h"
 
@@ -44,14 +40,14 @@ namespace OpenRCT2
             return static_cast<T *>(duk_get_pointer(ctx, -1));
         }
 
-        static void RegisterFunction(duk_context * ctx, duk_idx_t objIdx, const char * name, duk_c_function func)
+        inline void RegisterFunction(duk_context * ctx, duk_idx_t objIdx, const char * name, duk_c_function func)
         {
             duk_push_c_function(ctx, func, DUK_VARARGS);
             duk_put_prop_string(ctx, objIdx, name);
         }
 
         template<duk_int_t (*TGetter)(), void (*TSetter)(duk_int_t)>
-        static void RegisterProperty(duk_context * ctx, duk_idx_t objIdx, const char * name)
+        void RegisterProperty(duk_context * ctx, duk_idx_t objIdx, const char * name)
         {
             duk_push_string(ctx, name);
             duk_push_c_function(ctx, [](duk_context * ctx2) -> int

@@ -41,7 +41,6 @@
 #include "scenario/ScenarioRepository.h"
 #include "title/TitleScreen.h"
 #include "title/TitleSequenceManager.h"
-#include "thirdparty/linenoise.hpp"
 #include "ui/WindowManager.h"
 #include "Version.h"
 
@@ -63,6 +62,10 @@ extern "C"
     #include "rct2.h"
     #include "rct2/interop.h"
 }
+
+#pragma warning(push, 0)
+#include "thirdparty/linenoise.hpp"
+#pragma warning(pop)
 
 using namespace OpenRCT2;
 using namespace OpenRCT2::Audio;
