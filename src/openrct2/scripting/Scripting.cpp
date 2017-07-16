@@ -41,22 +41,6 @@ extern "C"
 using namespace OpenRCT2;
 using namespace OpenRCT2::Scripting;
 
-static int bind_console_log(duk_context * ctx)
-{
-    IScriptEngine * engine = GetContext()->GetScriptEngine();
-
-    sint32 numArgs = duk_get_top(ctx);
-    if (numArgs == 0)
-    {
-        return DUK_RET_TYPE_ERROR;
-    }
-
-    std::string s = duk_safe_to_string(ctx, 0);
-    Console::WriteLine("script: %s", s.c_str());
-    engine->ConsoleWriteLine(s);
-    return 1;
-}
-
 class ScriptContext final
 {
 private:
@@ -72,7 +56,7 @@ public:
 
     void LoadScript()
     {
-        std::string projectedVariables = "context,map,park";
+        std::string projectedVariables = "context,map,park,ui";
         std::string code;
         {
             size_t fileSize;
@@ -142,17 +126,8 @@ public:
         }
         else
         {
-            auto type = duk_get_type(_context, -1);
-            if (type == DUK_TYPE_OBJECT && !duk_is_function(_context, -1))
-            {
-                std::string result = duk_json_encode(_context, -1);
-                ConsoleWriteLine(result);
-            }
-            else
-            {
-                std::string result = duk_to_string(_context, -1);
-                ConsoleWriteLine(result);
-            }
+            std::string result = Stringify(_context, -1);
+            ConsoleWriteLine(result);
         }
         duk_pop(_context);
     }
@@ -186,15 +161,16 @@ private:
         duk_put_global_string(_context, "context");
 
         objIdx = duk_push_object(_context);
-        duk_push_c_function(_context, bind_console_log, DUK_VARARGS);
+        duk_push_c_function(_context, ConsoleLog, DUK_VARARGS);
         duk_put_prop_string(_context, objIdx, "log");
         duk_put_global_string(_context, "console");
 
         Bindings::CreatePark(_context);
         PutGlobal("park");
-
         Bindings::CreateMap(_context);
         PutGlobal("map");
+        Bindings::CreateUi(_context);
+        PutGlobal("ui");
     }
 
     static int Subscribe(duk_context * ctx)
@@ -312,6 +288,34 @@ private:
     {
         Console::Error::WriteLine("%s", s.c_str());
         console_writeline_error(s.c_str());
+    }
+
+    static int ConsoleLog(duk_context * ctx)
+    {
+        IScriptEngine * engine = GetContext()->GetScriptEngine();
+
+        sint32 numArgs = duk_get_top(ctx);
+        if (numArgs == 0)
+        {
+            return DUK_RET_TYPE_ERROR;
+        }
+
+        std::string s = Stringify(ctx, 0);
+        engine->ConsoleWriteLine(s);
+        return 1;
+    }
+
+    static std::string Stringify(duk_context * ctx, duk_idx_t idx)
+    {
+        auto type = duk_get_type(ctx, idx);
+        if (type == DUK_TYPE_OBJECT && !duk_is_function(ctx, -1))
+        {
+            return duk_json_encode(ctx, -1);
+        }
+        else
+        {
+            return duk_safe_to_string(ctx, -1);
+        }
     }
 };
 

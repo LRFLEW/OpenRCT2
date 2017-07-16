@@ -309,6 +309,7 @@ typedef struct rct_window {
     sint8 var_4B9;
     uint8 colours[6];           // 0x4BA
     uint8 visibility;           // VISIBILITY_CACHE
+    void * tag;
 } rct_window;
 
 #define RCT_WINDOW_RIGHT(w) (w->x + w->width)
@@ -478,6 +479,7 @@ enum {
     WC_DEBUG_PAINT = 130,
     WC_VIEW_CLIPPING = 131,
     WC_OBJECT_LOAD_ERROR = 132,
+    WC_CUSTOM = 133,
 
     // Only used for colour schemes
     WC_STAFF = 220,

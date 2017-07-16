@@ -54,6 +54,34 @@ export interface Park {
     postMessage(message: ParkMessage): void;
 }
 
+export interface Window {
+    id: number;
+    classification: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    title: string;
+}
+
+export interface WindowDesc {
+    classification: string;
+    x?: number;
+    y?: number;
+    width: number;
+    height: number;
+    title: string;
+    id?: number;
+}
+
+export interface Ui {
+    openWindow(desc: WindowDesc): Window;
+    closeWindow(window: Window);
+    closeWindows(classification: string, id?: number): void;
+    closeAllWindows(): void;
+}
+
 declare var context: Context;
 declare var map: Map;
 declare var park: Park;
+declare var ui: Ui;

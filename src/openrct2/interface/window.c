@@ -448,6 +448,7 @@ rct_window *window_create(sint32 x, sint32 y, sint32 width, sint32 height, rct_w
         *RCT2_NEW_WINDOW = *w;
 
     // Setup window
+    memset(w, 0, sizeof(rct_window));
     w->classification = cls;
     w->var_4B8 = -1;
     w->var_4B9 = -1;
