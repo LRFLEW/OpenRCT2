@@ -20,9 +20,9 @@ export interface Console {
 
 export interface Context {
     /**
-     * Called on every tick.
+     * Subscribes to the given hook.
      */
-    onTick: () => void;
+    subscribe: (hook: string, callback: Function) => void;
 }
 
 export interface Ride {

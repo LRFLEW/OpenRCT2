@@ -14,6 +14,7 @@
  *****************************************************************************/
 #pragma endregion
 
+#include <memory>
 #include <duktape.h>
 
 #include "../Context.h"
@@ -56,12 +57,40 @@ static int bind_console_log(duk_context * ctx)
     return 1;
 }
 
+class ScriptContext final
+{
+private:
+    duk_context * const _context;
+    std::string const   _path;
+
+public:
+    ScriptContext(duk_context * context, const std::string &path)
+        : _context(context),
+          _path(path)
+    {
+    }
+
+    void LoadScript()
+    {
+        size_t fileSize;
+        auto fileData = std::unique_ptr<char>((char *)File::ReadAllBytes(_path, &fileSize));
+        auto flags = DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NORESULT | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NOFILENAME;
+        auto result = duk_eval_raw(_context, fileData.get(), fileSize, flags);
+        if (result != DUK_ERR_NONE)
+        {
+            throw std::runtime_error("Failed to load script.");
+        }
+    }
+};
+
 class ScriptEngine final : public IScriptEngine
 {
 private:
-    IPlatformEnvironment * _env = nullptr;
-    duk_context * _context = nullptr;
-    bool _initialised = false;
+    IPlatformEnvironment *  _env            = nullptr;
+    duk_context *           _context        = nullptr;
+    bool                    _initialised    = false;
+
+    std::vector<ScriptContext>  _scripts;
 
 public:
     ScriptEngine(IPlatformEnvironment * env) :
@@ -81,24 +110,17 @@ public:
 
     void Update() override
     {
+        if (gScreenFlags & SCREEN_FLAGS_TITLE_DEMO)
+        {
+            return;
+        }
+
         if (!_initialised)
         {
             Initialise();
         }
 
-        if (duk_get_global_string(_context, "context"))
-        {
-            if (duk_get_prop_string(_context, -1, "onTick") && duk_is_callable(_context, -1))
-            {
-                if (duk_pcall(_context, 0) != DUK_EXEC_SUCCESS)
-                {
-                    std::string result = std::string(duk_safe_to_string(_context, -1));
-                    ConsoleWriteLineError(result);
-                }
-            }
-            duk_pop(_context);
-        }
-        duk_pop(_context);
+        CallHook("tick");
     }
 
     void ConsoleEval(const std::string &s) override
@@ -148,8 +170,9 @@ private:
         duk_idx_t objIdx;
 
         objIdx = duk_push_object(_context);
-        duk_push_null(_context);
-        duk_put_prop_string(_context, objIdx, "onTick");
+        duk_push_pointer(_context, this);
+        duk_put_prop_string(_context, objIdx, PROP_NATIVE_REF);
+        RegisterFunction(_context, objIdx, "subscribe", Subscribe);
         duk_put_global_string(_context, "context");
 
         objIdx = duk_push_object(_context);
@@ -164,6 +187,62 @@ private:
         PutGlobal("map");
     }
 
+    static int Subscribe(duk_context * ctx)
+    {
+        //  [0: hook name] [1: callback]
+        sint32 numArgs = duk_get_top(ctx);
+        if (numArgs != 2 ||
+            !duk_is_string(ctx, 0) ||
+            !duk_is_callable(ctx, 1))
+        {
+            return DUK_RET_TYPE_ERROR;
+        }
+
+        auto hookName = "hook:" + std::string(duk_get_string(ctx, 0));
+
+        duk_push_global_stash(ctx);
+        duk_get_prop_string(ctx, 2, hookName.c_str());
+        //  [0: hook name] [1: callback] [2: global] [3: global[hookName] or undefined]
+        if (!duk_is_array(ctx, 3))
+        {
+            duk_pop(ctx);
+            duk_push_array(ctx);
+            duk_dup(ctx, 3);
+            //  [0: hook name] [1: callback] [2: global] [3: new array] [4: new array]
+            duk_put_prop_string(ctx, 2, hookName.c_str());
+        }
+
+        duk_dup(ctx, 1);
+        //  [0: hook name] [1: callback] [2: global] [3: array] [4: callback]
+        auto arrayLength = duk_get_length(ctx, 3);
+        duk_put_prop_index(ctx, 3, (duk_uarridx_t)arrayLength);
+        duk_pop_2(ctx);
+        //  [0: hook name] [1: callback]
+        return 0;
+    }
+
+    void CallHook(const std::string &name)
+    {
+        auto hookName = "hook:" + name;
+        auto ctx = _context;
+        duk_push_global_stash(ctx);
+        duk_get_prop_string(ctx, -1, hookName.c_str());
+        if (duk_is_array(ctx, -1))
+        {
+            auto arrayLength = duk_get_length(ctx, -1);
+            for (size_t i = 0; i < arrayLength; i++)
+            {
+                duk_get_prop_index(ctx, -1, (duk_uarridx_t)i);
+                if (duk_is_callable(ctx, -1))
+                {
+                    duk_call(ctx, 0);
+                }
+                duk_pop(ctx);
+            }
+        }
+        duk_pop_2(ctx);
+    }
+
     void PutGlobal(const char * name)
     {
         duk_put_global_string(_context, name);
@@ -171,39 +250,36 @@ private:
 
     void LoadScripts()
     {
-        std::string scriptsDirectory = _env->GetDirectoryPath(DIRBASE::USER, DIRID::SCRIPTS);
-        std::string pattern = Path::Combine(scriptsDirectory, "*.js");
+        auto scriptPaths = ScanScriptPaths();
+        for (auto scriptPath : scriptPaths)
+        {
+            auto scriptContext = ScriptContext(_context, scriptPath);
+            try
+            {
+                scriptContext.LoadScript();
+                _scripts.push_back(std::move(scriptContext));
+            }
+            catch (const std::exception &ex)
+            {
+                ConsoleWriteLine("Error loading script: '" + scriptPath + "'");
+                ConsoleWriteLine(ex.what());
+            }
+        }
+    }
+
+    std::vector<std::string> ScanScriptPaths()
+    {
+        auto scriptPaths = std::vector<std::string>();
+        auto scriptsDirectory = _env->GetDirectoryPath(DIRBASE::USER, DIRID::SCRIPTS);
+        auto pattern = Path::Combine(scriptsDirectory, "*.js");
         auto * fileScanner = Path::ScanDirectory(pattern, true);
         while (fileScanner->Next())
         {
-            std::string scriptPath = fileScanner->GetPath();
-            LoadScript(scriptPath);
+            auto scriptPath = fileScanner->GetPath();
+            scriptPaths.push_back(scriptPath);
         }
         delete fileScanner;
-    }
-
-    void LoadScript(const std::string &path)
-    {
-        try
-        {
-            size_t fileSize;
-            void * fileData = File::ReadAllBytes(path, &fileSize);
-            duk_uint_t flags = DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NORESULT | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NOFILENAME;
-            duk_int_t result = duk_eval_raw(_context, (const char *)fileData, fileSize, flags);
-            if (result != DUK_ERR_NONE)
-            {
-                ConsoleEval("Error loading script: '" + path + "'");
-            }
-        }
-        catch (const Exception &)
-        {
-        }
-    }
-
-    void RegisterFunction(const std::string s, duk_c_function function)
-    {
-        duk_push_c_function(_context, function, DUK_VARARGS);
-        duk_put_global_string(_context, s.c_str());
+        return scriptPaths;
     }
 
     void ConsoleWriteLineError(std::string s)
