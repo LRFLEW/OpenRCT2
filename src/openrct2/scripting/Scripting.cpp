@@ -72,10 +72,20 @@ public:
 
     void LoadScript()
     {
-        size_t fileSize;
-        auto fileData = std::unique_ptr<char>((char *)File::ReadAllBytes(_path, &fileSize));
+        std::string projectedVariables = "context,map,park";
+        std::string code;
+        {
+            size_t fileSize;
+            auto fileData = std::unique_ptr<char>((char *)File::ReadAllBytes(_path, &fileSize));
+            code = std::string(fileData.get(), fileSize);
+        }
+
+        // Wrap the script in a function and pass the global objects as variables
+        // so that if the script modifies them, they are not modified for other scripts.
+        code = "(function(" + projectedVariables + "){" + code + "})(" + projectedVariables + ");";
+
         auto flags = DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NORESULT | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NOFILENAME;
-        auto result = duk_eval_raw(_context, fileData.get(), fileSize, flags);
+        auto result = duk_eval_raw(_context, code.c_str(), code.size(), flags);
         if (result != DUK_ERR_NONE)
         {
             throw std::runtime_error("Failed to load script.");
@@ -235,7 +245,23 @@ private:
                 duk_get_prop_index(ctx, -1, (duk_uarridx_t)i);
                 if (duk_is_callable(ctx, -1))
                 {
-                    duk_call(ctx, 0);
+                    auto rc = duk_pcall(ctx, 0);
+                    if (rc != DUK_EXEC_SUCCESS)
+                    {
+                        if (duk_is_error(ctx, -1))
+                        {
+                            // Accessing .stack might cause an error to be thrown, so wrap this
+                            // access in a duk_safe_call() if it matters.
+                            duk_get_prop_string(ctx, -1, "stack");
+                            ConsoleWriteLine("error: " + std::string(duk_safe_to_string(ctx, -1)));
+                            duk_pop(ctx);
+                        }
+                        else
+                        {
+                            // Non-Error value, coerce safely to string.
+                            ConsoleWriteLine("error: " + std::string(duk_safe_to_string(ctx, -1)));
+                        }
+                    }
                 }
                 duk_pop(ctx);
             }
