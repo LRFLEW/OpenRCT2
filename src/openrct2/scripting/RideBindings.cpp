@@ -22,8 +22,64 @@ extern "C"
     #include "../ride/ride.h"
 }
 
+#define AddPropertyInt32(TWrapper, name, getter, setter)      \
+{                                                             \
+    duk_push_string(Context, name);                           \
+    duk_push_c_function(Context, [](duk_context * ctx) -> int \
+    {                                                         \
+        auto wrapper = GetNativeReference<TWrapper>(ctx);     \
+        if (wrapper != nullptr)                               \
+        {                                                     \
+            sint32 result = wrapper->getter();                \
+            duk_push_int(ctx, result);                        \
+        }                                                     \
+        else                                                  \
+        {                                                     \
+            duk_push_int(ctx, 0);                             \
+        }                                                     \
+        return 1;                                             \
+    }, 0);                                                    \
+    duk_push_c_function(Context, [](duk_context * ctx) -> int \
+    {                                                         \
+        auto wrapper = GetNativeReference<TWrapper>(ctx);     \
+        if (wrapper != nullptr)                               \
+        {                                                     \
+            sint32 numArgs = duk_get_top(ctx);                \
+            if (numArgs == 0) return DUK_RET_TYPE_ERROR;      \
+            wrapper->setter(duk_to_int32(ctx, 0));            \
+        }                                                     \
+        return 0;                                             \
+    }, 1);                                                    \
+    duk_def_prop(Context, -4, DUK_DEFPROP_HAVE_GETTER |       \
+                              DUK_DEFPROP_HAVE_SETTER |       \
+                              DUK_DEFPROP_SET_ENUMERABLE);    \
+}((void)(0))
+
 namespace OpenRCT2 { namespace Scripting { namespace Bindings
 {
+    template<typename TWrapper, typename TNative>
+    class BindingObject
+    {
+    public:
+
+    protected:
+        duk_context * const Context;
+        TNative *     const Native;
+
+        virtual void AddProperties() { }
+    };
+
+    class RideBindingObject : BindingObject<RideBindingObject, rct_ride>
+    {
+        void AddProperties() override
+        {
+            AddPropertyInt32(RideBindingObject, "totalCustomers", GetTotalCustomers, SetTotalCustomers);
+        }
+
+        sint32 GetTotalCustomers() { return Native->total_customers; }
+        void SetTotalCustomers(sint32 value) { Native->total_customers = value; }
+    };
+
     void CreateRide(duk_context * ctx, rct_ride * ride)
     {
         if (ride == nullptr)
