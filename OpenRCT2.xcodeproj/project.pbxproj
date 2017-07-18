@@ -64,6 +64,16 @@
 		D41B73EF1C2101890080A7B9 /* libcurl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D41B73EE1C2101890080A7B9 /* libcurl.tbd */; };
 		D41B741D1C210A7A0080A7B9 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D41B741C1C210A7A0080A7B9 /* libiconv.tbd */; };
 		D41B74731C2125E50080A7B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D41B74721C2125E50080A7B9 /* Assets.xcassets */; };
+		D426DDDE1F1DAA14001DDDE1 /* Bindings.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D426DDD51F1DAA14001DDDE1 /* Bindings.hpp */; };
+		D426DDDF1F1DAA14001DDDE1 /* MapBindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D426DDD61F1DAA14001DDDE1 /* MapBindings.cpp */; };
+		D426DDE01F1DAA14001DDDE1 /* ParkBindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D426DDD71F1DAA14001DDDE1 /* ParkBindings.cpp */; };
+		D426DDE11F1DAA14001DDDE1 /* RideBindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D426DDD81F1DAA14001DDDE1 /* RideBindings.cpp */; };
+		D426DDE21F1DAA14001DDDE1 /* Scripting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D426DDD91F1DAA14001DDDE1 /* Scripting.cpp */; };
+		D426DDE31F1DAA14001DDDE1 /* Scripting.h in Headers */ = {isa = PBXBuildFile; fileRef = D426DDDA1F1DAA14001DDDE1 /* Scripting.h */; };
+		D426DDE41F1DAA14001DDDE1 /* UiBindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D426DDDB1F1DAA14001DDDE1 /* UiBindings.cpp */; };
+		D426DDE51F1DAA14001DDDE1 /* WindowBindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D426DDDC1F1DAA14001DDDE1 /* WindowBindings.cpp */; };
+		D426DDE61F1DAA14001DDDE1 /* WindowBindings.h in Headers */ = {isa = PBXBuildFile; fileRef = D426DDDD1F1DAA14001DDDE1 /* WindowBindings.h */; };
+		D426DDE81F1DAAD5001DDDE1 /* duktape.c in Sources */ = {isa = PBXBuildFile; fileRef = D426DDE71F1DAAD5001DDDE1 /* duktape.c */; };
 		D43407E21D0E14CE00C2B3D4 /* shaders in Resources */ = {isa = PBXBuildFile; fileRef = D43407E11D0E14CE00C2B3D4 /* shaders */; };
 		D45A38BC1CF3006400659A24 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D45A38B31CF3006400659A24 /* libcrypto.dylib */; };
 		D45A38BE1CF3006400659A24 /* libjansson.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D45A38B51CF3006400659A24 /* libjansson.dylib */; };
@@ -627,6 +637,16 @@
 		D41B73EE1C2101890080A7B9 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
 		D41B741C1C210A7A0080A7B9 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		D41B74721C2125E50080A7B9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = distribution/macos/Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		D426DDD51F1DAA14001DDDE1 /* Bindings.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Bindings.hpp; sourceTree = "<group>"; };
+		D426DDD61F1DAA14001DDDE1 /* MapBindings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MapBindings.cpp; sourceTree = "<group>"; };
+		D426DDD71F1DAA14001DDDE1 /* ParkBindings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParkBindings.cpp; sourceTree = "<group>"; };
+		D426DDD81F1DAA14001DDDE1 /* RideBindings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RideBindings.cpp; sourceTree = "<group>"; };
+		D426DDD91F1DAA14001DDDE1 /* Scripting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scripting.cpp; sourceTree = "<group>"; };
+		D426DDDA1F1DAA14001DDDE1 /* Scripting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scripting.h; sourceTree = "<group>"; };
+		D426DDDB1F1DAA14001DDDE1 /* UiBindings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UiBindings.cpp; sourceTree = "<group>"; };
+		D426DDDC1F1DAA14001DDDE1 /* WindowBindings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowBindings.cpp; sourceTree = "<group>"; };
+		D426DDDD1F1DAA14001DDDE1 /* WindowBindings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowBindings.h; sourceTree = "<group>"; };
+		D426DDE71F1DAAD5001DDDE1 /* duktape.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = duktape.c; path = libxc/include/duktape.c; sourceTree = SOURCE_ROOT; };
 		D43407E11D0E14CE00C2B3D4 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shaders; path = data/shaders; sourceTree = SOURCE_ROOT; };
 		D45A38B31CF3006400659A24 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcrypto.dylib; sourceTree = "<group>"; };
 		D45A38B41CF3006400659A24 /* libfreetype.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfreetype.dylib; sourceTree = "<group>"; };
@@ -1471,6 +1491,23 @@
 			path = libxc;
 			sourceTree = "<group>";
 		};
+		D426DDD41F1DAA13001DDDE1 /* scripting */ = {
+			isa = PBXGroup;
+			children = (
+				D426DDE71F1DAAD5001DDDE1 /* duktape.c */,
+				D426DDD51F1DAA14001DDDE1 /* Bindings.hpp */,
+				D426DDD61F1DAA14001DDDE1 /* MapBindings.cpp */,
+				D426DDD71F1DAA14001DDDE1 /* ParkBindings.cpp */,
+				D426DDD81F1DAA14001DDDE1 /* RideBindings.cpp */,
+				D426DDD91F1DAA14001DDDE1 /* Scripting.cpp */,
+				D426DDDA1F1DAA14001DDDE1 /* Scripting.h */,
+				D426DDDB1F1DAA14001DDDE1 /* UiBindings.cpp */,
+				D426DDDC1F1DAA14001DDDE1 /* WindowBindings.cpp */,
+				D426DDDD1F1DAA14001DDDE1 /* WindowBindings.h */,
+			);
+			path = scripting;
+			sourceTree = "<group>";
+		};
 		D45A38C61CF3007A00659A24 /* libpng16 */ = {
 			isa = PBXGroup;
 			children = (
@@ -1749,6 +1786,7 @@
 				F76C84761EC4E7CC00FA49E2 /* rct2 */,
 				F76C84831EC4E7CC00FA49E2 /* ride */,
 				F76C84F31EC4E7CD00FA49E2 /* scenario */,
+				D426DDD41F1DAA13001DDDE1 /* scripting */,
 				F76C84FB1EC4E7CD00FA49E2 /* title */,
 				F76C85041EC4E7CD00FA49E2 /* ui */,
 				F76C85061EC4E7CD00FA49E2 /* util */,
@@ -2635,6 +2673,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D426DDE31F1DAA14001DDDE1 /* Scripting.h in Headers */,
+				D426DDE61F1DAA14001DDDE1 /* WindowBindings.h in Headers */,
+				D426DDDE1F1DAA14001DDDE1 /* Bindings.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3056,6 +3097,7 @@
 				D48AFDB71EF78DBF0081C644 /* BenchGfxCommmands.cpp in Sources */,
 				F76C85DB1EC4E88300FA49E2 /* IStream.cpp in Sources */,
 				F76C85DD1EC4E88300FA49E2 /* Json.cpp in Sources */,
+				D426DDDF1F1DAA14001DDDE1 /* MapBindings.cpp in Sources */,
 				F76C85E11EC4E88300FA49E2 /* MemoryStream.cpp in Sources */,
 				F76C85E41EC4E88300FA49E2 /* Path.cpp in Sources */,
 				F76C85E71EC4E88300FA49E2 /* String.cpp in Sources */,
@@ -3072,6 +3114,7 @@
 				F76C85FF1EC4E88300FA49E2 /* Rain.cpp in Sources */,
 				F76C86011EC4E88300FA49E2 /* rect.c in Sources */,
 				F76C86021EC4E88300FA49E2 /* scrolling_text.c in Sources */,
+				D426DDE21F1DAA14001DDDE1 /* Scripting.cpp in Sources */,
 				F76C86031EC4E88300FA49E2 /* sprite.cpp in Sources */,
 				F76C86041EC4E88300FA49E2 /* string.c in Sources */,
 				F76C86051EC4E88300FA49E2 /* editor.c in Sources */,
@@ -3149,12 +3192,14 @@
 				F76C86941EC4E88400FA49E2 /* paint_helpers.c in Sources */,
 				F76C86951EC4E88400FA49E2 /* litter.c in Sources */,
 				F76C86961EC4E88400FA49E2 /* misc.c in Sources */,
+				D426DDE51F1DAA14001DDDE1 /* WindowBindings.cpp in Sources */,
 				F76C86971EC4E88400FA49E2 /* peep.c in Sources */,
 				F76C86981EC4E88400FA49E2 /* sprite.c in Sources */,
 				F76C869A1EC4E88400FA49E2 /* supports.c in Sources */,
 				F76C869C1EC4E88400FA49E2 /* ParkImporter.cpp in Sources */,
 				F76C869E1EC4E88400FA49E2 /* peep.c in Sources */,
 				F76C86A01EC4E88400FA49E2 /* peep_data.c in Sources */,
+				D426DDE01F1DAA14001DDDE1 /* ParkBindings.cpp in Sources */,
 				F76C86A11EC4E88400FA49E2 /* staff.c in Sources */,
 				F76C86A31EC4E88400FA49E2 /* crash.cpp in Sources */,
 				F76C86A51EC4E88400FA49E2 /* linux.c in Sources */,
@@ -3202,6 +3247,7 @@
 				F76C86E21EC4E88400FA49E2 /* side_friction_roller_coaster.c in Sources */,
 				F76C86E31EC4E88400FA49E2 /* stand_up_roller_coaster.c in Sources */,
 				F76C86E41EC4E88400FA49E2 /* steeplechase.c in Sources */,
+				D426DDE81F1DAAD5001DDDE1 /* duktape.c in Sources */,
 				F76C86E51EC4E88400FA49E2 /* suspended_swinging_coaster.c in Sources */,
 				F76C86E61EC4E88400FA49E2 /* twister_roller_coaster.c in Sources */,
 				F76C86E71EC4E88400FA49E2 /* vertical_drop_roller_coaster.c in Sources */,
@@ -3227,6 +3273,7 @@
 				F76C86FB1EC4E88400FA49E2 /* spiral_slide.c in Sources */,
 				F76C86FC1EC4E88400FA49E2 /* ride.c in Sources */,
 				F76C86FE1EC4E88400FA49E2 /* ride_data.c in Sources */,
+				D426DDE11F1DAA14001DDDE1 /* RideBindings.cpp in Sources */,
 				F76C87001EC4E88400FA49E2 /* ride_ratings.c in Sources */,
 				F76C87021EC4E88400FA49E2 /* facility.c in Sources */,
 				F76C87041EC4E88400FA49E2 /* shop.c in Sources */,
@@ -3259,6 +3306,7 @@
 				F76C87271EC4E88400FA49E2 /* vehicle_paint.c in Sources */,
 				F76C87291EC4E88400FA49E2 /* boat_ride.c in Sources */,
 				F76C872A1EC4E88400FA49E2 /* dingy_slide.c in Sources */,
+				D426DDE41F1DAA14001DDDE1 /* UiBindings.cpp in Sources */,
 				F76C872B1EC4E88400FA49E2 /* log_flume.c in Sources */,
 				F76C872D1EC4E88400FA49E2 /* river_rapids.c in Sources */,
 				F76C872E1EC4E88400FA49E2 /* splash_boats.c in Sources */,

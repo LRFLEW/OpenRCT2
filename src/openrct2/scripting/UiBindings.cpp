@@ -76,10 +76,12 @@ namespace OpenRCT2
                     RegisterFunction(ctx, objIdx, "closeWindows", CloseWindows);
                     RegisterFunction(ctx, objIdx, "closeAllWindows", CloseAllWindows);
                 }
+                
+                struct Classification { const char * name; rct_windowclass c; };
             private:
                 rct_windownumber _nextWindowNumber = 0;
-
-                constexpr static struct { const char * name; rct_windowclass c; } ClassificationMap[] =
+                
+                constexpr static Classification ClassificationMap[2] =
                 {
                     { "$footpath",  WC_FOOTPATH },
                     { "$land",      WC_LAND }
@@ -203,6 +205,8 @@ namespace OpenRCT2
                 auto binding = new UiBinding();
                 binding->CreateBindingObject(ctx);
             }
+            
+            constexpr UiBinding::Classification UiBinding::ClassificationMap[2];
         }
     }
 }
