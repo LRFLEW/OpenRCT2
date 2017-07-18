@@ -27,15 +27,13 @@ namespace OpenRCT2 { namespace Scripting { namespace Bindings
     template<typename TNative>
     class BindingObject
     {
-    public:
-
     protected:
         duk_context * const Context;
         TNative *     const Native;
 
         virtual void AddProperties() { }
         
-        template<class TParent, sint32(TParent::*getter)(), void(TParent::*setter)(sint32)>
+        template<class TParent, class TType>
         void AddPropertyInt32(const char *name) {
             duk_push_string(Context, name);                           \
             duk_push_c_function(Context, [](duk_context * ctx) -> int \
@@ -43,7 +41,7 @@ namespace OpenRCT2 { namespace Scripting { namespace Bindings
                                     auto parent = GetNativeReference<TParent>(ctx);
                                     if (parent != nullptr)
                                     {
-                                        sint32 result = (parent->*getter)();
+                                        sint32 result = parent->Get(TType{});
                                         duk_push_int(ctx, result);
                                     }
                                     else
@@ -59,7 +57,7 @@ namespace OpenRCT2 { namespace Scripting { namespace Bindings
                                     {
                                         sint32 numArgs = duk_get_top(ctx);
                                         if (numArgs == 0) return DUK_RET_TYPE_ERROR;
-                                        (parent->*setter)(duk_to_int32(ctx, 0));
+                                        parent->Set(duk_to_int32(ctx, 0), TType{});
                                     }
                                     return 0;
                                 }, 1);
@@ -71,13 +69,15 @@ namespace OpenRCT2 { namespace Scripting { namespace Bindings
 
     class RideBindingObject : BindingObject<rct_ride>
     {
-        void AddProperties() override
+        virtual void AddProperties() override
         {
-            AddPropertyInt32<RideBindingObject, &RideBindingObject::GetTotalCustomers, &RideBindingObject::SetTotalCustomers>("totalCustomers");
+            AddPropertyInt32<RideBindingObject, total_customers>("totalCustomers");
         }
 
-        sint32 GetTotalCustomers() { return Native->total_customers; }
-        void SetTotalCustomers(sint32 value) { Native->total_customers = value; }
+    public:
+        class total_customers { };
+        sint32 Get(total_customers) { return Native->total_customers; }
+        void Set(sint32 value, total_customers) { Native->total_customers = value; }
     };
 
     void CreateRide(duk_context * ctx, rct_ride * ride)
