@@ -79,6 +79,7 @@ static const char * TryLoadAllProcAddresses()
     SetupOpenGLFunction(glBindFragDataLocation);
     SetupOpenGLFunction(glBindFramebuffer);
     SetupOpenGLFunction(glBindVertexArray);
+    SetupOpenGLFunction(glBlitFramebuffer);
     SetupOpenGLFunction(glBufferData);
     SetupOpenGLFunction(glCompileShader);
     SetupOpenGLFunction(glCreateProgram);
@@ -104,6 +105,8 @@ static const char * TryLoadAllProcAddresses()
     SetupOpenGLFunction(glShaderSource);
     SetupOpenGLFunction(glUniform1i);
     SetupOpenGLFunction(glUniform1iv);
+    SetupOpenGLFunction(glUniform1ui);
+    SetupOpenGLFunction(glUniform1uiv);
     SetupOpenGLFunction(glUniform2i);
     SetupOpenGLFunction(glUniform2f);
     SetupOpenGLFunction(glUniform4f);

@@ -141,6 +141,7 @@ GLAPI_DECL PFNGLBINDBUFFERPROC                  glBindBuffer                GLAP
 GLAPI_DECL PFNGLBINDFRAGDATALOCATIONPROC        glBindFragDataLocation      GLAPI_SET;
 GLAPI_DECL PFNGLBINDFRAMEBUFFERPROC             glBindFramebuffer           GLAPI_SET;
 GLAPI_DECL PFNGLBINDVERTEXARRAYPROC             glBindVertexArray           GLAPI_SET;
+GLAPI_DECL PFNGLBLITFRAMEBUFFERPROC             glBlitFramebuffer           GLAPI_SET;
 GLAPI_DECL PFNGLBUFFERDATAPROC                  glBufferData                GLAPI_SET;
 GLAPI_DECL PFNGLCOMPILESHADERPROC               glCompileShader             GLAPI_SET;
 GLAPI_DECL PFNGLCREATEPROGRAMPROC               glCreateProgram             GLAPI_SET;
@@ -166,6 +167,8 @@ GLAPI_DECL PFNGLLINKPROGRAMPROC                 glLinkProgram               GLAP
 GLAPI_DECL PFNGLSHADERSOURCEPROC                glShaderSource              GLAPI_SET;
 GLAPI_DECL PFNGLUNIFORM1IPROC                   glUniform1i                 GLAPI_SET;
 GLAPI_DECL PFNGLUNIFORM1IVPROC                  glUniform1iv                GLAPI_SET;
+GLAPI_DECL PFNGLUNIFORM1UIPROC                  glUniform1ui                GLAPI_SET;
+GLAPI_DECL PFNGLUNIFORM1UIVPROC                 glUniform1uiv               GLAPI_SET;
 GLAPI_DECL PFNGLUNIFORM2IPROC                   glUniform2i                 GLAPI_SET;
 GLAPI_DECL PFNGLUNIFORM2FPROC                   glUniform2f                 GLAPI_SET;
 GLAPI_DECL PFNGLUNIFORM4FPROC                   glUniform4f                 GLAPI_SET;

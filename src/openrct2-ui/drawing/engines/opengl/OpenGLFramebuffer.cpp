@@ -37,9 +37,9 @@ OpenGLFramebuffer::OpenGLFramebuffer(sint32 width, sint32 height)
 
     glGenTextures(1, &_texture);
     glBindTexture(GL_TEXTURE_2D, _texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     glGenFramebuffers(1, &_id);
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
@@ -59,6 +59,16 @@ void OpenGLFramebuffer::Bind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
     glViewport(0, 0, (GLsizei)_width, (GLsizei)_height);
+}
+
+void OpenGLFramebuffer::BindDraw() const
+{
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _id);
+}
+
+void OpenGLFramebuffer::BindRead() const
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, _id);
 }
 
 void * OpenGLFramebuffer::GetPixels() const

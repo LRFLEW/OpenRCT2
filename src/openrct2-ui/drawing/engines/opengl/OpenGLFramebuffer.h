@@ -19,6 +19,8 @@
 #include <openrct2/common.h>
 #include "OpenGLAPI.h"
 
+#include <vector>
+
 struct SDL_Window;
 
 class OpenGLFramebuffer
@@ -39,5 +41,7 @@ public:
     GLuint GetTexture() const { return _texture; }
 
     void Bind() const;
+    void BindDraw() const;
+    void BindRead() const;
     void * GetPixels() const;
 };
