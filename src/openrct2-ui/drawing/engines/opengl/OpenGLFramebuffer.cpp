@@ -71,25 +71,23 @@ void OpenGLFramebuffer::BindRead() const
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _id);
 }
 
-void * OpenGLFramebuffer::GetPixels() const
+void OpenGLFramebuffer::GetPixels(rct_drawpixelinfo &dpi) const
 {
-    void * pixels = Memory::Allocate<void>(_width * _height * 4);
-    glReadPixels(0, 0, _width, _height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    assert(dpi.width == _width && dpi.height == _height);
+    
+    uint8 * pixels = Memory::Allocate<uint8>(_width * _height);
+    glReadPixels(0, 0, _width, _height, GL_RED_INTEGER, GL_UNSIGNED_BYTE, pixels);
 
-    // Flip pixels vertically
-    void * flippedPixels = Memory::Allocate<void>(_width * _height * 4);
-    size_t stride = _width * 4;
-    uint8 * src = (uint8 *)pixels + ((_height - 1) * stride);
-    uint8 * dst = (uint8 *)flippedPixels;
+    // Flip pixels vertically on copy
+    uint8 * src = pixels + ((_height - 1) * _width);
+    uint8 * dst = dpi.bits;
     for (sint32 y = 0; y < _height; y++)
     {
-        Memory::Copy(dst, src, stride);
-        src -= stride;
-        dst += stride;
+        Memory::Copy(dst, src, _width);
+        src -= _width;
+        dst += dpi.width + dpi.pitch;
     }
     Memory::Free(pixels);
-
-    return flippedPixels;
 }
 
 #endif /* DISABLE_OPENGL */

@@ -261,13 +261,10 @@ public:
 
     sint32 Screenshot() override
     {
-        log_error("Screenshots are currently broken. Sorry");
         const OpenGLFramebuffer * framebuffer = _swapFramebuffer->GetTargetFramebuffer();
         framebuffer->Bind();
-        void * pixels = framebuffer->GetPixels();
-
-        sint32 result = screenshot_dump_png_32bpp(_width, _height, pixels);
-        Memory::Free(pixels);
+        framebuffer->GetPixels(_bitsDPI);
+        sint32 result = screenshot_dump_png(&_bitsDPI);
         return result;
     }
 

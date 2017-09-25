@@ -17,6 +17,7 @@
 #pragma once
 
 #include <openrct2/common.h>
+#include <openrct2/drawing/drawing.h>
 #include "OpenGLAPI.h"
 
 #include <vector>
@@ -43,5 +44,5 @@ public:
     void Bind() const;
     void BindDraw() const;
     void BindRead() const;
-    void * GetPixels() const;
+    void GetPixels(rct_drawpixelinfo &dpi) const;
 };
