@@ -153,6 +153,7 @@
 		D45A395D1CF300AF00659A24 /* libSDL2_ttf.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D45A38B71CF3006400659A24 /* libSDL2_ttf.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D45A395E1CF300AF00659A24 /* libSDL2.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D45A38B81CF3006400659A24 /* libSDL2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D45A395F1CF300AF00659A24 /* libspeexdsp.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D45A38B91CF3006400659A24 /* libspeexdsp.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D47016011F7B48340090BDDB /* DrawGlassShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D47015FD1F7B48290090BDDB /* DrawGlassShader.cpp */; };
 		D47304D51C4FF8250015C0EA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D47304D41C4FF8250015C0EA /* libz.tbd */; };
 		D48AFDB71EF78DBF0081C644 /* BenchGfxCommmands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D48AFDB61EF78DBF0081C644 /* BenchGfxCommmands.cpp */; };
 		D4A8B4B41DB41873007A2F29 /* libpng16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D4A8B4B31DB41873007A2F29 /* libpng16.dylib */; };
@@ -886,6 +887,8 @@
 		D45A39561CF3007A00659A24 /* speex_resampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = speex_resampler.h; sourceTree = "<group>"; };
 		D45A39571CF3007A00659A24 /* speexdsp_config_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = speexdsp_config_types.h; sourceTree = "<group>"; };
 		D45A39581CF3007A00659A24 /* speexdsp_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = speexdsp_types.h; sourceTree = "<group>"; };
+		D47015FD1F7B48290090BDDB /* DrawGlassShader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DrawGlassShader.cpp; sourceTree = "<group>"; };
+		D47015FE1F7B48290090BDDB /* DrawGlassShader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DrawGlassShader.h; sourceTree = "<group>"; };
 		D47304D41C4FF8250015C0EA /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		D4895D321C23EFDD000CD788 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = distribution/macos/Info.plist; sourceTree = SOURCE_ROOT; };
 		D48AFDB61EF78DBF0081C644 /* BenchGfxCommmands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BenchGfxCommmands.cpp; sourceTree = "<group>"; };
@@ -1671,6 +1674,28 @@
 			path = speex;
 			sourceTree = "<group>";
 		};
+		D47015FC1F7B47F80090BDDB /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				C686F8E91CDBC3B7009F9BFC /* observation_tower.c */,
+				C686F8EA1CDBC3B7009F9BFC /* space_rings.c */,
+				C686F8EB1CDBC3B7009F9BFC /* spiral_slide.c */,
+				C686F8ED1CDBC3B7009F9BFC /* facility.c */,
+				C686F8EF1CDBC3B7009F9BFC /* shop.c */,
+				C686F8F11CDBC3B7009F9BFC /* 3d_cinema.c */,
+				C686F8F21CDBC3B7009F9BFC /* enterprise.c */,
+				C686F8F31CDBC3B7009F9BFC /* go_karts.c */,
+				C686F8FE1CDBC3B7009F9BFC /* lift.c */,
+				C686F8FF1CDBC3B7009F9BFC /* miniature_railway.c */,
+				C686F9001CDBC3B7009F9BFC /* monorail.c */,
+				C686F9011CDBC3B7009F9BFC /* suspended_monorail.c */,
+				C686F9031CDBC3B7009F9BFC /* boat_ride.c */,
+				C686F9041CDBC3B7009F9BFC /* dingy_slide.c */,
+				C686F9051CDBC3B7009F9BFC /* log_flume.c */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		D497D06F1C20FD52002BF46A = {
 			isa = PBXGroup;
 			children = (
@@ -1679,6 +1704,7 @@
 				8546F74A1D7E1D220004004C /* Tests */,
 				D41B73ED1C21017D0080A7B9 /* Libraries */,
 				D497D0791C20FD52002BF46A /* Products */,
+				D47015FC1F7B47F80090BDDB /* Recovered References */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 0;
@@ -2570,6 +2596,8 @@
 				F76C85911EC4E82600FA49E2 /* CopyFramebufferShader.cpp */,
 				F76C85921EC4E82600FA49E2 /* CopyFramebufferShader.h */,
 				F76C85931EC4E82600FA49E2 /* DrawCommands.h */,
+				D47015FD1F7B48290090BDDB /* DrawGlassShader.cpp */,
+				D47015FE1F7B48290090BDDB /* DrawGlassShader.h */,
 				F76C85941EC4E82600FA49E2 /* DrawImageShader.cpp */,
 				F76C85951EC4E82600FA49E2 /* DrawImageShader.h */,
 				F76C85961EC4E82600FA49E2 /* DrawLineShader.cpp */,
@@ -3077,6 +3105,7 @@
 				C666EE731F37ACB10061AA04 /* MusicCredits.cpp in Sources */,
 				C654DF351F69C0430040F43D /* Park.cpp in Sources */,
 				C654DF3A1F69C0430040F43D /* TitleEditor.cpp in Sources */,
+				D47016011F7B48340090BDDB /* DrawGlassShader.cpp in Sources */,
 				C666EE6F1F37ACB10061AA04 /* DebugPaint.cpp in Sources */,
 				F76C88821EC5324E00FA49E2 /* FillRectShader.cpp in Sources */,
 				F76C88831EC5324E00FA49E2 /* OpenGLAPI.cpp in Sources */,

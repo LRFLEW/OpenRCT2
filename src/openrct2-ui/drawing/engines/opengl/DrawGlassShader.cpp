@@ -16,10 +16,10 @@
 
 #ifndef DISABLE_OPENGL
 
-#include "FillRectShader.h"
+#include "DrawGlassShader.h"
 #include "OpenGLFramebuffer.h"
 
-FillRectShader::FillRectShader() : OpenGLShaderProgram("fillrect")
+DrawGlassShader::DrawGlassShader() : OpenGLShaderProgram("drawglass")
 {
     GetLocations();
 
@@ -35,60 +35,68 @@ FillRectShader::FillRectShader() : OpenGLShaderProgram("fillrect")
     glVertexAttribIPointer(vIndex, 1, GL_INT, 0, 0);
 
     Use();
-    SetFlags(0);
+    glUniform1i(uTexture, 0);
     glUniform1i(uSourceFramebuffer, 1);
 }
 
-FillRectShader::~FillRectShader()
+DrawGlassShader::~DrawGlassShader()
 {
     glDeleteBuffers(1, &_vbo);
     glDeleteVertexArrays(1, &_vao);
 }
 
-void FillRectShader::GetLocations()
+void DrawGlassShader::GetLocations()
 {
     uScreenSize         = GetUniformLocation("uScreenSize");
+    uTexColourBounds    = GetUniformLocation("uTexColourBounds");
     uClip               = GetUniformLocation("uClip");
     uBounds             = GetUniformLocation("uBounds");
-    uFlags              = GetUniformLocation("uFlags");
+    uTexture            = GetUniformLocation("uTexture");
     uSourceFramebuffer  = GetUniformLocation("uSourceFramebuffer");
-    uPaletteRemap       = GetUniformLocation("uPaletteRemap");
+    uTexColourAtlas     = GetUniformLocation("uTexColourAtlas");
+    uTexPaletteBounds   = GetUniformLocation("uTexPaletteBounds");
+    uTexPaletteAtlas    = GetUniformLocation("uTexPaletteAtlas");
 
     vIndex              = GetAttributeLocation("vIndex");
 }
 
-void FillRectShader::SetScreenSize(sint32 width, sint32 height)
+void DrawGlassShader::SetScreenSize(sint32 width, sint32 height)
 {
     glUniform2i(uScreenSize, width, height);
 }
 
-void FillRectShader::SetClip(sint32 left, sint32 top, sint32 right, sint32 bottom)
+void DrawGlassShader::SetClip(sint32 left, sint32 top, sint32 right, sint32 bottom)
 {
     glUniform4i(uClip, left, top, right, bottom);
 }
 
-void FillRectShader::SetBounds(sint32 left, sint32 top, sint32 right, sint32 bottom)
+void DrawGlassShader::SetBounds(sint32 left, sint32 top, sint32 right, sint32 bottom)
 {
     glUniform4i(uBounds, left, top, right, bottom);
 }
 
-void FillRectShader::SetFlags(uint32 flags)
-{
-    glUniform1i(uFlags, flags);
+void DrawGlassShader::SetTexture(GLuint texture) {
+    _texture = texture;
+    OpenGLAPI::SetTexture(0, GL_TEXTURE_2D, texture);
 }
 
-void FillRectShader::SetSourceFramebuffer(GLuint texture)
+void DrawGlassShader::SetSourceFramebuffer(GLuint texture)
 {
     _sourceFramebuffer = texture;
     OpenGLAPI::SetTexture(1, GL_TEXTURE_2D, texture);
 }
 
-void FillRectShader::SetPaletteRemap(const GLuint * paletteRemap)
-{
-    glUniform1uiv(uPaletteRemap, 256, paletteRemap);
+void DrawGlassShader::SetTexColour(vec4f bounds, sint32 atlas) {
+    glUniform4fv(uTexColourBounds, 1, reinterpret_cast<float *>(&bounds));
+    glUniform1i(uTexColourAtlas, atlas);
 }
 
-void FillRectShader::Draw(sint32 left, sint32 top, sint32 right, sint32 bottom)
+void DrawGlassShader::SetTexPalette(vec4f bounds, sint32 atlas) {
+    glUniform4fv(uTexPaletteBounds, 1, reinterpret_cast<float *>(&bounds));
+    glUniform1i(uTexPaletteAtlas, atlas);
+}
+
+void DrawGlassShader::Draw(sint32 left, sint32 top, sint32 right, sint32 bottom)
 {
     SetBounds(left, top, right, bottom);
 
@@ -96,7 +104,7 @@ void FillRectShader::Draw(sint32 left, sint32 top, sint32 right, sint32 bottom)
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-GLuint FillRectShader::GetSourceFramebuffer() const
+GLuint DrawGlassShader::GetSourceFramebuffer() const
 {
     return _sourceFramebuffer;
 }

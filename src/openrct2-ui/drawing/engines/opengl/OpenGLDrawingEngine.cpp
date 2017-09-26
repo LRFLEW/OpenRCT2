@@ -40,6 +40,7 @@
 #include "OpenGLAPI.h"
 #include "OpenGLFramebuffer.h"
 #include "CopyFramebufferShader.h"
+#include "DrawGlassShader.h"
 #include "DrawImageShader.h"
 #include "DrawLineShader.h"
 #include "FillRectShader.h"
@@ -67,6 +68,7 @@ private:
     OpenGLDrawingEngine *   _engine = nullptr;
     rct_drawpixelinfo *     _dpi    = nullptr;
 
+    DrawGlassShader *       _drawGlassShader        = nullptr;
     DrawImageShader *       _drawImageShader        = nullptr;
     DrawLineShader *        _drawLineShader         = nullptr;
     FillRectShader *        _fillRectShader         = nullptr;
@@ -82,9 +84,12 @@ private:
 
     struct {
         RectCommandBatch rectangles;
+        GlassCommandBatch glass;
         LineCommandBatch lines;
         ImageCommandBatch images;
     } _commandBuffers;
+    
+    void DrawGlass(sint32 left, sint32 top, sint32 right, sint32 bottom, const CachedTextureInfo *texture, const CachedTextureInfo *texture2);
 
 public:
     explicit OpenGLDrawingContext(OpenGLDrawingEngine * engine);
@@ -110,6 +115,7 @@ public:
 
     void FlushRectangles();
     void FlushLines();
+    void FlushGlass();
     void FlushImages();
 
     void SetDPI(rct_drawpixelinfo * dpi);
@@ -402,6 +408,7 @@ OpenGLDrawingContext::OpenGLDrawingContext(OpenGLDrawingEngine * engine)
 
 OpenGLDrawingContext::~OpenGLDrawingContext()
 {
+    delete _drawGlassShader;
     delete _drawImageShader;
     delete _drawLineShader;
     delete _fillRectShader;
@@ -417,6 +424,7 @@ IDrawingEngine * OpenGLDrawingContext::GetEngine()
 void OpenGLDrawingContext::Initialise()
 {
     _textureCache = new TextureCache();
+    _drawGlassShader = new DrawGlassShader();
     _drawImageShader = new DrawImageShader();
     _drawLineShader = new DrawLineShader();
     _fillRectShader = new FillRectShader();
@@ -426,6 +434,8 @@ void OpenGLDrawingContext::Resize(sint32 width, sint32 height)
 {
     FlushCommandBuffers();
 
+    _drawGlassShader->Use();
+    _drawGlassShader->SetScreenSize(width, height);
     _drawImageShader->Use();
     _drawImageShader->SetScreenSize(width, height);
     _drawLineShader->Use();
@@ -636,7 +646,7 @@ void OpenGLDrawingContext::DrawSprite(uint32 image, sint32 x, sint32 y, uint32 t
     right += _clipLeft;
     bottom += _clipTop;
 
-    auto texture = _textureCache->GetOrLoadImageTexture(image);
+    const CachedTextureInfo *texture = _textureCache->GetOrLoadImageTexture(image);
 
     bool special = false;
     if (!(image & IMAGE_TYPE_REMAP_2_PLUS) && (image & IMAGE_TYPE_REMAP)) {
@@ -649,7 +659,12 @@ void OpenGLDrawingContext::DrawSprite(uint32 image, sint32 x, sint32 y, uint32 t
         tertiaryColour = 0;
     }
 
-    auto texture2 = _textureCache->GetOrLoadPaletteTexture(image, tertiaryColour, special);
+    const CachedTextureInfo *texture2 = _textureCache->GetOrLoadPaletteTexture(image, tertiaryColour, special);
+    
+    if (special || (image & IMAGE_TYPE_TRANSPARENT)) {
+        DrawGlass(left, top, right, bottom, texture, texture2);
+        return;
+    }
 
     DrawImageCommand& command = _commandBuffers.images.allocate();
 
@@ -664,20 +679,48 @@ void OpenGLDrawingContext::DrawSprite(uint32 image, sint32 x, sint32 y, uint32 t
     command.bounds = { left, top, right, bottom };
     command.mask = 0;
     command.flags = 0;
-
-    if (special)
-    {
-        command.flags |= DrawImageCommand::FLAG_TRANSPARENT_SPECIAL;
-    }
-
-    if (image & IMAGE_TYPE_TRANSPARENT)
-    {
-        command.flags |= DrawImageCommand::FLAG_TRANSPARENT;
-    }
-    else if (image & (IMAGE_TYPE_REMAP_2_PLUS | IMAGE_TYPE_REMAP))
+    
+    if (image & (IMAGE_TYPE_REMAP_2_PLUS | IMAGE_TYPE_REMAP))
     {
         command.flags |= DrawImageCommand::FLAG_REMAP;
     }
+}
+
+/*
+ sint32 bounds[4];
+ sint32 clip[4];
+ GLuint sourceFramebuffer;
+ sint32 texColourAtlas;
+ vec4f texColourBounds;
+ sint32 texPaletteAtlas;
+ vec4f texPaletteBounds;
+ */
+
+void OpenGLDrawingContext::DrawGlass(sint32 left, sint32 top, sint32 right, sint32 bottom, const CachedTextureInfo *texture, const CachedTextureInfo *texture2)
+{
+    // Must be rendered in order, depends on already rendered contents
+    FlushCommandBuffers();
+    
+    GLuint srcTexture = _engine->SwapCopyReturningSourceTexture();
+    
+    DrawGlassCommand& command = _commandBuffers.glass.allocate();
+    
+    command.bounds[0] = left;
+    command.bounds[1] = top;
+    command.bounds[2] = right;
+    command.bounds[3] = bottom;
+    
+    command.clip[0] = _clipLeft;
+    command.clip[1] = _clipTop;
+    command.clip[2] = _clipRight;
+    command.clip[3] = _clipBottom;
+    
+    command.sourceFramebuffer = srcTexture;
+    
+    command.texColourAtlas = texture->index;
+    command.texColourBounds = texture->normalizedBounds;
+    command.texPaletteAtlas = texture2->index;
+    command.texPaletteBounds = texture2->computedBounds;
 }
 
 void OpenGLDrawingContext::DrawSpriteRawMasked(sint32 x, sint32 y, uint32 maskImage, uint32 colourImage)
@@ -835,6 +878,7 @@ void OpenGLDrawingContext::FlushCommandBuffers()
 {
     FlushRectangles();
     FlushLines();
+    FlushGlass();
     FlushImages();
 }
 
@@ -868,6 +912,23 @@ void OpenGLDrawingContext::FlushLines()
     }
 
     _commandBuffers.lines.reset();
+}
+
+void OpenGLDrawingContext::FlushGlass() {
+    for (size_t n = 0; n < _commandBuffers.glass.size(); n++)
+    {
+        const auto& command = _commandBuffers.glass[n];
+        
+        _drawGlassShader->Use();
+        _drawGlassShader->SetClip(command.clip[0], command.clip[1], command.clip[2], command.clip[3]);
+        //_drawGlassShader->SetTexture(_textureCache->GetAtlasesTexture());
+        _drawGlassShader->SetSourceFramebuffer(command.sourceFramebuffer);
+        _drawGlassShader->SetTexColour(command.texColourBounds, command.texColourAtlas);
+        _drawGlassShader->SetTexPalette(command.texPaletteBounds, command.texPaletteAtlas);
+        _drawGlassShader->Draw(command.bounds[0], command.bounds[1], command.bounds[2], command.bounds[3]);
+    }
+    
+    _commandBuffers.glass.reset();
 }
 
 void OpenGLDrawingContext::FlushImages()

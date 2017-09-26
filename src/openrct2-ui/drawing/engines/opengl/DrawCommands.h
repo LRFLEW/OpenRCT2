@@ -96,11 +96,21 @@ struct DrawImageCommand {
     {
         FLAG_COLOUR = (1 << 0),
         FLAG_REMAP = (1 << 1),
-        FLAG_TRANSPARENT = (1 << 2),
-        FLAG_TRANSPARENT_SPECIAL = (1 << 3),
     };
 };
 
+struct DrawGlassCommand {
+    sint32 bounds[4];
+    sint32 clip[4];
+    GLuint sourceFramebuffer;
+    sint32 texColourAtlas;
+    vec4f texColourBounds;
+    sint32 texPaletteAtlas;
+    vec4f texPaletteBounds;
+};
+
+
 typedef CommandBatch<DrawImageCommand> ImageCommandBatch;
+typedef CommandBatch<DrawGlassCommand> GlassCommandBatch;
 typedef CommandBatch<DrawLineCommand> LineCommandBatch;
 typedef CommandBatch<DrawRectCommand> RectCommandBatch;
