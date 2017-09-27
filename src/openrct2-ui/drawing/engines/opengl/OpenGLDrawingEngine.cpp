@@ -516,7 +516,7 @@ void OpenGLDrawingContext::FilterRect(FILTER_PALETTE_ID palette, sint32 left, si
     command.sourceFramebuffer = srcTexture;
 
     uint16           g1Index = palette_to_g1_offset[palette];
-    rct_g1_element * g1Element = &g1Elements[g1Index];
+    rct_g1_element * g1Element = gfx_get_g1_element(g1Index);
     uint8 *          g1Bits = g1Element->offset;
 
     for (size_t i = 0; i < 256; i++)

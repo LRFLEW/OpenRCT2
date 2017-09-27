@@ -426,8 +426,8 @@ static void colour_char(uint8 colour, uint16* current_font_flags, uint8* palette
 
     sint32 eax;
 
-    rct_g1_element g1_element = g1Elements[SPR_TEXT_PALETTE];
-    eax = ((uint32*)g1_element.offset)[colour & 0xFF];
+    rct_g1_element *g1_element = gfx_get_g1_element(SPR_TEXT_PALETTE);
+    eax = ((uint32*)g1_element->offset)[colour & 0xFF];
 
     if (!(*current_font_flags & 2)) {
         eax = eax & 0x0FF0000FF;
@@ -838,7 +838,7 @@ static const utf8 *ttf_process_format_code(rct_drawpixelinfo *dpi, const utf8 *t
     case FORMAT_ADJUST_PALETTE:
     {
         uint16 eax = palette_to_g1_offset[(uint8)*nextCh++];
-        rct_g1_element *g1Element = &g1Elements[eax];
+        rct_g1_element *g1Element = gfx_get_g1_element(eax);
         uint32 ebx = g1Element->offset[249] + 256;
         if (!(info->flags & TEXT_DRAW_FLAG_OUTLINE)) {
             ebx = ebx & 0xFF;
@@ -904,7 +904,7 @@ static const utf8 *ttf_process_format_code(rct_drawpixelinfo *dpi, const utf8 *t
     case FORMAT_INLINE_SPRITE:
     {
         uint32 imageId = *((uint32*)(nextCh));
-        rct_g1_element *g1Element = &g1Elements[imageId & 0x7FFFF];
+        rct_g1_element *g1Element = gfx_get_g1_element(imageId & 0x7FFFF);
         if (!(info->flags & TEXT_DRAW_FLAG_NO_DRAW)) {
             gfx_draw_sprite(dpi, imageId, info->x, info->y, 0);
         }

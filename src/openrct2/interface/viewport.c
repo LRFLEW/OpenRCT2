@@ -1295,7 +1295,7 @@ static bool sub_679023(rct_drawpixelinfo *dpi, sint32 imageId, sint32 x, sint32 
             index &= 0x1F;
         }
         sint32 g1Index = palette_to_g1_offset[index];
-        palette = g1Elements[g1Index].offset;
+        palette = gfx_get_g1_element(g1Index)->offset;
     } else {
         gCurrentImageType = 0;
     }

@@ -417,7 +417,7 @@ static void window_track_list_paint(rct_window *w, rct_drawpixelinfo *dpi)
         return;
     }
 
-    rct_g1_element *substituteElement = &g1Elements[SPR_TEMP];
+    rct_g1_element *substituteElement = gfx_get_g1_element(SPR_TEMP);
     rct_g1_element tmpElement = *substituteElement;
     substituteElement->offset = _trackDesignPreviewPixels + (_currentTrackPieceDirection * TRACK_PREVIEW_IMAGE_SIZE);
     substituteElement->width = 370;

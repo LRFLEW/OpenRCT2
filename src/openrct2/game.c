@@ -174,14 +174,14 @@ void update_palette_effects()
         if ((intptr_t)water_type != -1) {
             palette = water_type->image_id;
         }
-        rct_g1_element g1_element = g1Elements[palette];
-        sint32 xoffset = g1_element.x_offset;
+        rct_g1_element *g1_element = gfx_get_g1_element(palette);
+        sint32 xoffset = g1_element->x_offset;
         xoffset = xoffset * 4;
         uint8 *paletteOffset = gGamePalette + xoffset;
-        for (sint32 i = 0; i < g1_element.width; i++) {
-            paletteOffset[(i * 4) + 0] = -((0xFF - g1_element.offset[(i * 3) + 0]) / 2) - 1;
-            paletteOffset[(i * 4) + 1] = -((0xFF - g1_element.offset[(i * 3) + 1]) / 2) - 1;
-            paletteOffset[(i * 4) + 2] = -((0xFF - g1_element.offset[(i * 3) + 2]) / 2) - 1;
+        for (sint32 i = 0; i < g1_element->width; i++) {
+            paletteOffset[(i * 4) + 0] = -((0xFF - g1_element->offset[(i * 3) + 0]) / 2) - 1;
+            paletteOffset[(i * 4) + 1] = -((0xFF - g1_element->offset[(i * 3) + 1]) / 2) - 1;
+            paletteOffset[(i * 4) + 2] = -((0xFF - g1_element->offset[(i * 3) + 2]) / 2) - 1;
         }
         platform_update_palette(gGamePalette, 10, 236);
         gClimateLightningFlash++;
@@ -194,14 +194,14 @@ void update_palette_effects()
                 palette = water_type->image_id;
             }
 
-            rct_g1_element g1_element = g1Elements[palette];
-            sint32 xoffset = g1_element.x_offset;
+            rct_g1_element *g1_element = gfx_get_g1_element(palette);
+            sint32 xoffset = g1_element->x_offset;
             xoffset = xoffset * 4;
             uint8 *paletteOffset = gGamePalette + xoffset;
-            for (sint32 i = 0; i < g1_element.width; i++) {
-                paletteOffset[(i * 4) + 0] = g1_element.offset[(i * 3) + 0];
-                paletteOffset[(i * 4) + 1] = g1_element.offset[(i * 3) + 1];
-                paletteOffset[(i * 4) + 2] = g1_element.offset[(i * 3) + 2];
+            for (sint32 i = 0; i < g1_element->width; i++) {
+                paletteOffset[(i * 4) + 0] = g1_element->offset[(i * 3) + 0];
+                paletteOffset[(i * 4) + 1] = g1_element->offset[(i * 3) + 1];
+                paletteOffset[(i * 4) + 2] = g1_element->offset[(i * 3) + 2];
             }
         }
 
@@ -223,8 +223,8 @@ void update_palette_effects()
         if ((intptr_t)water_type != -1) {
             waterId = water_type->palette_index_1;
         }
-        rct_g1_element g1_element = g1Elements[shade + waterId];
-        uint8* vs = &g1_element.offset[j * 3];
+        rct_g1_element *g1_element = gfx_get_g1_element(shade + waterId);
+        uint8* vs = &g1_element->offset[j * 3];
         uint8* vd = &gGamePalette[230 * 4];
         sint32 n = 5;
         for (sint32 i = 0; i < n; i++) {
@@ -232,7 +232,7 @@ void update_palette_effects()
             vd[1] = vs[1];
             vd[2] = vs[2];
             vs += 9;
-            if (vs >= &g1_element.offset[9 * n]) {
+            if (vs >= &g1_element->offset[9 * n]) {
                 vs -= 9 * n;
             }
             vd += 4;
@@ -242,15 +242,15 @@ void update_palette_effects()
         if ((intptr_t)water_type != -1) {
             waterId = water_type->palette_index_2;
         }
-        g1_element = g1Elements[shade + waterId];
-        vs = &g1_element.offset[j * 3];
+        g1_element = gfx_get_g1_element(shade + waterId);
+        vs = &g1_element->offset[j * 3];
         n = 5;
         for (sint32 i = 0; i < n; i++) {
             vd[0] = vs[0];
             vd[1] = vs[1];
             vd[2] = vs[2];
             vs += 9;
-            if (vs >= &g1_element.offset[9 * n]) {
+            if (vs >= &g1_element->offset[9 * n]) {
                 vs -= 9 * n;
             }
             vd += 4;
@@ -258,8 +258,8 @@ void update_palette_effects()
 
         j = ((uint16)(gPaletteEffectFrame * -960) * 3) >> 16;
         waterId = SPR_GAME_PALETTE_4;
-        g1_element = g1Elements[shade + waterId];
-        vs = &g1_element.offset[j * 3];
+        g1_element = gfx_get_g1_element(shade + waterId);
+        vs = &g1_element->offset[j * 3];
         vd += 12;
         n = 3;
         for (sint32 i = 0; i < n; i++) {
@@ -267,7 +267,7 @@ void update_palette_effects()
             vd[1] = vs[1];
             vd[2] = vs[2];
             vs += 3;
-            if (vs >= &g1_element.offset[3 * n]) {
+            if (vs >= &g1_element->offset[3 * n]) {
                 vs -= 3 * n;
             }
             vd += 4;

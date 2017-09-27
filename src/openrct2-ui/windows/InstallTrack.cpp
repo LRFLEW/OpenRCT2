@@ -228,7 +228,7 @@ static void window_install_track_paint(rct_window *w, rct_drawpixelinfo *dpi)
     sint32 colour = ColourMapA[w->colours[0]].darkest;
     gfx_fill_rect(dpi, x, y, x + 369, y + 216, colour);
 
-    rct_g1_element *substituteElement = &g1Elements[SPR_TEMP];
+    rct_g1_element *substituteElement = gfx_get_g1_element(SPR_TEMP);
     rct_g1_element tmpElement = *substituteElement;
     substituteElement->offset = _trackDesignPreviewPixels + (_currentTrackPieceDirection * TRACK_PREVIEW_IMAGE_SIZE);
     substituteElement->width = 370;

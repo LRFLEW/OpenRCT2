@@ -280,8 +280,6 @@ extern uint32 gPickupPeepImage;
 extern sint32 gPickupPeepX;
 extern sint32 gPickupPeepY;
 
-extern rct_g1_element *g1Elements;
-
 extern rct_drawpixelinfo gScreenDPI;
 extern rct_drawpixelinfo gWindowDPI;
 

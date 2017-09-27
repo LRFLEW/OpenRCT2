@@ -492,11 +492,11 @@ void gfx_filter_pixel(rct_drawpixelinfo *dpi, sint32 x, sint32 y, FILTER_PALETTE
  */
 void gfx_transpose_palette(sint32 pal, uint8 product)
 {
-    rct_g1_element g1 = g1Elements[pal];
-    sint32 width = g1.width;
-    sint32 x = g1.x_offset;
+    rct_g1_element *g1 = gfx_get_g1_element(pal);
+    sint32 width = g1->width;
+    sint32 x = g1->x_offset;
     uint8* dest_pointer = &gGamePalette[x * 4];
-    uint8* source_pointer = g1.offset;
+    uint8* source_pointer = g1->offset;
 
     for (; width > 0; width--) {
         dest_pointer[0] = (source_pointer[0] * product) >> 8;
@@ -527,11 +527,11 @@ void load_palette()
         palette = water_type->image_id;
     }
 
-    rct_g1_element g1 = g1Elements[palette];
-    sint32 width = g1.width;
-    sint32 x = g1.x_offset;
+    rct_g1_element *g1 = gfx_get_g1_element(palette);
+    sint32 width = g1->width;
+    sint32 x = g1->x_offset;
     uint8* dest_pointer = &gGamePalette[x * 4];
-    uint8* source_pointer = g1.offset;
+    uint8* source_pointer = g1->offset;
 
     for (; width > 0; width--) {
         dest_pointer[0] = source_pointer[0];
@@ -645,7 +645,7 @@ void gfx_invalidate_pickedup_peep()
     if (sprite != UINT32_MAX) {
         sprite = sprite & 0x7FFFF;
 
-        rct_g1_element *g1_elements = &g1Elements[sprite];
+        rct_g1_element *g1_elements = gfx_get_g1_element(sprite);
         sint32 left = gPickupPeepX + g1_elements->x_offset;
         sint32 top = gPickupPeepY + g1_elements->y_offset;
         sint32 right = left + g1_elements->width;

@@ -47,9 +47,9 @@ extern "C"
     static bool     _csgLoaded = false;
 
     #ifdef NO_RCT2
-        rct_g1_element * g1Elements = nullptr;
+        static rct_g1_element * g1Elements = nullptr;
     #else
-        rct_g1_element * g1Elements = RCT2_ADDRESS(RCT2_ADDRESS_G1_ELEMENTS, rct_g1_element);
+        static rct_g1_element * g1Elements = RCT2_ADDRESS(RCT2_ADDRESS_G1_ELEMENTS, rct_g1_element);
     #endif
 
     static void read_and_convert_gxdat(IStream * stream, size_t count, rct_g1_element *elements)

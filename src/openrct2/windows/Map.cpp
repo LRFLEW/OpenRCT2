@@ -881,7 +881,7 @@ static void window_map_scrollpaint(rct_window *w, rct_drawpixelinfo *dpi, sint32
 
     gfx_clear(dpi, PALETTE_INDEX_10);
 
-    g1_element = &g1Elements[SPR_TEMP];
+    g1_element = gfx_get_g1_element(SPR_TEMP);
     pushed_g1_element = *g1_element;
 
     g1_element->offset = (uint8 *) _mapImageData;
