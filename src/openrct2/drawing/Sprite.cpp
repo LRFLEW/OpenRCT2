@@ -45,11 +45,14 @@ extern "C"
     static rct_gx   _g2 = { 0 };
     static rct_gx   _csg = { 0 };
     static bool     _csgLoaded = false;
+    static bool     _g1IsRCTC = false;
 
     #ifdef NO_RCT2
         static rct_g1_element * g1Elements = nullptr;
+        static rct_g1_element * gDynamicElements = nullptr;
     #else
         static rct_g1_element * g1Elements = RCT2_ADDRESS(RCT2_ADDRESS_G1_ELEMENTS, rct_g1_element);
+        static rct_g1_element * gDynamicElements = RCT2_ADDRESS(RCT2_ADDRESS_G1_ELEMENTS + SPR_G1_END, rct_g1_element);
     #endif
 
     static void read_and_convert_gxdat(IStream * stream, size_t count, rct_g1_element *elements)
@@ -88,15 +91,20 @@ extern "C"
             auto fs = FileStream(path, FILE_MODE_OPEN);
             rct_g1_header header = fs.ReadValue<rct_g1_header>();
 
+#ifndef NO_RCT2
             /* number of elements is stored in g1.dat, but because the entry
              * headers are static, this can't be variable until made into a
              * dynamic array.
              */
             header.num_entries = 29294;
+#else
+            _g1IsRCTC = header.num_entries == 29357;
+#endif
 
             // Read element headers
 #ifdef NO_RCT2
-            g1Elements = Memory::AllocateArray<rct_g1_element>(324206);
+            g1Elements = Memory::AllocateArray<rct_g1_element>(header.num_entries);
+            gDynamicElements = Memory::AllocateArray<rct_g1_element>(324206 - 29294);
 #endif
             read_and_convert_gxdat(&fs, header.num_entries, g1Elements);
 
@@ -127,6 +135,7 @@ extern "C"
         SafeFree(_g1Buffer);
     #ifdef NO_RCT2
         SafeFree(g1Elements);
+        SafeFree(gDynamicElements);
     #endif
     }
 
@@ -368,7 +377,7 @@ extern "C"
             }
 
             uint16 palette_offset = palette_to_g1_offset[palette_ref];
-            return g1Elements[palette_offset].offset;
+            return gfx_get_g1_element(palette_offset)->offset;
         }
         else {
             uint8* palette_pointer = gPeepPalette;
@@ -382,11 +391,11 @@ extern "C"
                 assert(tertiary_colour < PALETTE_TO_G1_OFFSET_COUNT);
     #endif // DEBUG_LEVEL_2
                 uint32 tertiary_offset = palette_to_g1_offset[tertiary_colour];
-                rct_g1_element* tertiary_palette = &g1Elements[tertiary_offset];
+                rct_g1_element* tertiary_palette = gfx_get_g1_element(tertiary_offset);
                 memcpy(palette_pointer + 0x2E, &tertiary_palette->offset[0xF3], 12);
             }
-            rct_g1_element* primary_palette = &g1Elements[primary_offset];
-            rct_g1_element* secondary_palette = &g1Elements[secondary_offset];
+            rct_g1_element* primary_palette = gfx_get_g1_element(primary_offset);
+            rct_g1_element* secondary_palette = gfx_get_g1_element(secondary_offset);
 
             memcpy(palette_pointer + 0xF3, &primary_palette->offset[0xF3], 12);
             memcpy(palette_pointer + 0xCA, &secondary_palette->offset[0xF3], 12);
@@ -584,8 +593,8 @@ extern "C"
     void FASTCALL gfx_draw_sprite_raw_masked_software(rct_drawpixelinfo *dpi, sint32 x, sint32 y, sint32 maskImage, sint32 colourImage)
     {
         sint32 left, top, right, bottom, width, height;
-        rct_g1_element *imgMask = &g1Elements[maskImage & 0x7FFFF];
-        rct_g1_element *imgColour = &g1Elements[colourImage & 0x7FFFF];
+        rct_g1_element *imgMask = gfx_get_g1_element(maskImage & 0x7FFFF);
+        rct_g1_element *imgColour = gfx_get_g1_element(colourImage & 0x7FFFF);
 
         assert(imgMask->flags & G1_FLAG_BMP);
         assert(imgColour->flags & G1_FLAG_BMP);
@@ -648,9 +657,28 @@ extern "C"
             return nullptr;
         }
 
-        if (image_id < SPR_G2_BEGIN)
+        if (image_id < SPR_G1_END)
         {
-            return &g1Elements[image_id];
+            if (_g1IsRCTC)
+            {
+                return &g1Elements[image_id +
+                                   (image_id >=  1575) * 32 +
+                                   (image_id >=  4951) *  3 +
+                                   (image_id >= 17154) *  2 +
+                                   (image_id >= 18084) *  2 +
+                                   (image_id >= 23761) *  4 +
+                                   (image_id >= 24627) *  4 +
+                                   (image_id >= 28197) *  2
+                                   ];
+            }
+            else
+            {
+                return &g1Elements[image_id];
+            }
+        }
+        else if (image_id < SPR_G2_BEGIN)
+        {
+            return &gDynamicElements[image_id];
         }
         if (image_id < SPR_CSG_BEGIN)
         {
