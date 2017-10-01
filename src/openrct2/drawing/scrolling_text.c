@@ -40,40 +40,66 @@ assert_struct_size(rct_draw_scroll_text, 0xA12);
 #define MAX_SCROLLING_TEXT_ENTRIES 32
 
 static rct_draw_scroll_text _drawScrollTextList[MAX_SCROLLING_TEXT_ENTRIES];
-static uint8 _characterBitmaps[224 * 8];
 static uint32 _drawSCrollNextIndex = 0;
 
+static union
+{
+    uint8 bitmap[224 * 8];
+    uint8 aamap[244 * 64];
+} _characterBitmaps;
+
 void scrolling_text_set_bitmap_for_sprite(utf8 *text, sint32 scroll, uint8 *bitmap, const sint16 *scrollPositionOffsets);
+void scrolling_text_set_bitmap_for_sprite_antialiased(utf8 *text, sint32 scroll, uint8 *bitmap, const sint16 *scrollPositionOffsets);
 void scrolling_text_set_bitmap_for_ttf(utf8 *text, sint32 scroll, uint8 *bitmap, const sint16 *scrollPositionOffsets);
 
 void scrolling_text_initialise_bitmaps()
 {
-    uint8 drawingSurface[64];
-    rct_drawpixelinfo dpi = {
-        .bits = (uint8 *)&drawingSurface,
-        .x = 0,
-        .y = 0,
-        .width = 8,
-        .height = 8,
-        .pitch = 0,
-        .zoom_level = 0
-    };
-
-
-    for (sint32 i = 0; i < 224; i++) {
-        memset(drawingSurface, 0, sizeof(drawingSurface));
-        gfx_draw_sprite_software(&dpi, SPR_CHAR_START + FONT_SPRITE_BASE_TINY + i, -1, 0, 0);
-
-        for (sint32 x = 0; x < 8; x++) {
-            uint8 val = 0;
-            for (sint32 y = 0; y < 8; y++) {
-                val >>= 1;
-                uint8 pixel = dpi.bits[x + y * 8];
-                if (pixel == 1 || (gTinyFontAntiAliased && pixel == 2)) {
-                    val |= 0x80;
+    if (gTinyFontAntiAliased)
+    {
+        rct_drawpixelinfo dpi = {
+            .x = 0,
+            .y = 0,
+            .width = 8,
+            .height = 8,
+            .pitch = 0,
+            .zoom_level = 0
+        };
+        
+        for (sint32 i = 0; i < 224; ++i)
+        {
+            dpi.bits = &_characterBitmaps.aamap[i * 64];
+            gfx_draw_sprite_software(&dpi, SPR_CHAR_START + FONT_SPRITE_BASE_TINY + i, -1, 0, 0);
+        }
+    }
+    else
+    {
+        uint8 drawingSurface[64];
+        rct_drawpixelinfo dpi = {
+            .bits = (uint8 *)&drawingSurface,
+            .x = 0,
+            .y = 0,
+            .width = 8,
+            .height = 8,
+            .pitch = 0,
+            .zoom_level = 0
+        };
+        
+        
+        for (sint32 i = 0; i < 224; i++) {
+            memset(drawingSurface, 0, sizeof(drawingSurface));
+            gfx_draw_sprite_software(&dpi, SPR_CHAR_START + FONT_SPRITE_BASE_TINY + i, -1, 0, 0);
+            
+            for (sint32 x = 0; x < 8; x++) {
+                uint8 val = 0;
+                for (sint32 y = 0; y < 8; y++) {
+                    val >>= 1;
+                    uint8 pixel = dpi.bits[x + y * 8];
+                    if (pixel == 1 || (gTinyFontAntiAliased && pixel == 2)) {
+                        val |= 0x80;
+                    }
                 }
+                _characterBitmaps.bitmap[i * 8 + x] = val;
             }
-            _characterBitmaps[i * 8 + x] = val;
         }
     }
 
@@ -90,12 +116,6 @@ void scrolling_text_initialise_bitmaps()
         g1->offset[17] = 0;
     }
 }
-
-static uint8 *font_sprite_get_codepoint_bitmap(sint32 codepoint)
-{
-    return &_characterBitmaps[font_sprite_get_codepoint_offset(codepoint) * 8];
-}
-
 
 static sint32 scrolling_text_get_matching_or_oldest(rct_string_id stringId, uint16 scroll, uint16 scrollingMode)
 {
@@ -1452,6 +1472,8 @@ sint32 scrolling_text_setup(paint_session * session, rct_string_id stringId, uin
     memset(scrollText->bitmap, 0, 320 * 8);
     if (gUseTrueTypeFont) {
         scrolling_text_set_bitmap_for_ttf(scrollString, scroll, scrollText->bitmap, scrollingModePositions);
+    } else if (gTinyFontAntiAliased) {
+        scrolling_text_set_bitmap_for_sprite_antialiased(scrollString, scroll, scrollText->bitmap, scrollingModePositions);
     } else {
         scrolling_text_set_bitmap_for_sprite(scrollString, scroll, scrollText->bitmap, scrollingModePositions);
     }
@@ -1486,7 +1508,7 @@ void scrolling_text_set_bitmap_for_sprite(utf8 *text, sint32 scroll, uint8 *bitm
         if (codepoint < 32) continue;
 
         sint32 characterWidth = font_sprite_get_codepoint_width(FONT_SPRITE_BASE_TINY, codepoint);
-        uint8 *characterBitmap = font_sprite_get_codepoint_bitmap(codepoint);
+        uint8 *characterBitmap = &_characterBitmaps.bitmap[font_sprite_get_codepoint_offset(codepoint) * 8];
         for (; characterWidth != 0; characterWidth--, characterBitmap++) {
             // Skip any none displayed columns
             if (scroll != 0) {
@@ -1501,6 +1523,98 @@ void scrolling_text_set_bitmap_for_sprite(utf8 *text, sint32 scroll, uint8 *bitm
                 for (uint8 char_bitmap = *characterBitmap; char_bitmap != 0; char_bitmap >>= 1){
                     if (char_bitmap & 1) *dst = characterColour;
 
+                    // Jump to next row
+                    dst += 64;
+                }
+            }
+            scrollPositionOffsets++;
+        }
+    }
+}
+
+static const uint8 antialiased_gradients[COLOUR_COUNT * 4] = {
+     -1,  -1,  -1,  -1, // COLOUR_BLACK
+     -1,  -1,  -1,  -1, // COLOUR_GREY
+     21,  20,  17, 241, // COLOUR_WHITE
+     -1,  -1,  -1,  -1, // COLOUR_DARK_PURPLE
+     -1,  -1,  -1,  -1, // COLOUR_LIGHT_PURPLE
+     -1,  -1,  -1,  -1, // COLOUR_BRIGHT_PURPLE
+     -1,  -1,  -1,  -1, // COLOUR_DARK_BLUE
+     -1,  -1,  -1,  -1, // COLOUR_LIGHT_BLUE
+     -1,  -1,  -1,  -1, // COLOUR_ICY_BLUE
+     -1,  -1,  -1,  -1, // COLOUR_TEAL
+     -1,  -1,  -1,  -1, // COLOUR_AQUAMARINE
+     -1,  -1,  -1,  -1, // COLOUR_SATURATED_GREEN
+     -1,  -1,  -1,  -1, // COLOUR_DARK_GREEN
+     -1,  -1,  -1,  -1, // COLOUR_MOSS_GREEN
+     -1,  -1,  -1,  -1, // COLOUR_BRIGHT_GREEN
+     -1,  -1,  -1,  -1, // COLOUR_OLIVE_GREEN
+     -1,  -1,  -1,  -1, // COLOUR_DARK_OLIVE_GREEN
+     55,  81,  29,  86, // COLOUR_BRIGHT_YELLOW
+     -1,  -1,  -1,  -1, // COLOUR_YELLOW
+     -1,  -1,  -1,  -1, // COLOUR_DARK_YELLOW
+     -1,  -1,  -1,  -1, // COLOUR_LIGHT_ORANGE
+     -1,  -1,  -1,  -1, // COLOUR_DARK_ORANGE
+     -1,  -1,  -1,  -1, // COLOUR_LIGHT_BROWN
+     -1,  -1,  -1,  -1, // COLOUR_SATURATED_BROWN
+     -1,  -1,  -1,  -1, // COLOUR_DARK_BROWN
+     -1,  -1,  -1,  -1, // COLOUR_SALMON_PINK
+     -1,  -1,  -1,  -1, // COLOUR_BORDEAUX_RED
+     -1,  -1,  -1,  -1, // COLOUR_SATURATED_RED
+    173, 172, 170,  61, // COLOUR_BRIGHT_RED
+     -1,  -1,  -1,  -1, // COLOUR_DARK_PINK
+     -1,  -1,  -1,  -1, // COLOUR_BRIGHT_PINK
+     -1,  -1,  -1,  -1, // COLOUR_LIGHT_PINK
+};
+
+static const uint8 antialiased_text_palettes[FORMAT_COLOUR_CODE_END - FORMAT_COLOUR_CODE_START] = {
+    0, 1, 2, 28, 0, 17, 0, 0, 0, 0, 0, 0, 0
+};
+
+void scrolling_text_set_bitmap_for_sprite_antialiased(utf8 *text, sint32 scroll, uint8 *bitmap, const sint16 *scrollPositionOffsets)
+{
+    const uint8 *characterColour = &antialiased_gradients[(gCommonFormatArgs[7] & 0x7F) * 4];
+    
+    utf8 *ch = text;
+    while (true) {
+        uint32 codepoint = utf8_get_next(ch, (const utf8**)&ch);
+        
+        // If at the end of the string loop back to the start
+        if (codepoint == 0) {
+            ch = text;
+            continue;
+        }
+        
+        // Set any change in colour
+        if (codepoint <= FORMAT_COLOUR_CODE_END && codepoint >= FORMAT_COLOUR_CODE_START){
+            codepoint -= FORMAT_COLOUR_CODE_START;
+            characterColour = &antialiased_gradients[antialiased_text_palettes[codepoint] * 4];
+            continue;
+        }
+        
+        // If another type of control character ignore
+        if (codepoint < 32) continue;
+        
+        // Temporary
+        if (characterColour[0] == (uint8) -1)
+            return;
+        
+        sint32 characterWidth = font_sprite_get_codepoint_width(FONT_SPRITE_BASE_TINY, codepoint);
+        uint8 *characterBitmap = &_characterBitmaps.bitmap[font_sprite_get_codepoint_offset(codepoint) * 64];
+        for (; characterWidth != 0; characterWidth--, characterBitmap++) {
+            // Skip any none displayed columns
+            if (scroll != 0) {
+                scroll--;
+                continue;
+            }
+            
+            sint16 scrollPosition = *scrollPositionOffsets;
+            if (scrollPosition == -1) return;
+            if (scrollPosition > -1) {
+                uint8 *dst = &bitmap[scrollPosition];
+                for (int i=0; i < 8; ++i) {
+                    if (characterBitmap[i * 8]) *dst = characterColour[characterBitmap[i * 8] - 1];
+                    
                     // Jump to next row
                     dst += 64;
                 }
