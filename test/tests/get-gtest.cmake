@@ -19,6 +19,10 @@ endif()
 ExternalProject_Get_Property(googletest-distribution SOURCE_DIR)
 set(GOOGLETEST_DISTRIB_SOURCE_DIR "${SOURCE_DIR}")
 
+if(MINGW)
+    set(maybe_gtest_no_pthreads -Dgtest_disable_pthreads=TRUE)
+endif()
+
 ExternalProject_Add(
     googletest
     DEPENDS googletest-distribution
@@ -26,15 +30,17 @@ ExternalProject_Add(
     SOURCE_DIR "${GOOGLETEST_DISTRIB_SOURCE_DIR}/googletest"
     CMAKE_ARGS
         "-Dgtest_force_shared_crt=TRUE"
+        ${maybe_gtest_no_pthreads}
         ${tc_arg}
     BUILD_BYPRODUCTS "googletest-prefix/src/googletest-build/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
     BUILD_BYPRODUCTS "googletest-prefix/src/googletest-build/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}"
     # Disable install step
     INSTALL_COMMAND ""
     # Wrap download, configure and build steps in a script to log output
-    LOG_DOWNLOAD ON
-    LOG_CONFIGURE ON
-    LOG_BUILD ON)
+    # LOG_DOWNLOAD ON
+    # LOG_CONFIGURE ON
+    # LOG_BUILD ON
+    )
 
 
 # Specify include dir
