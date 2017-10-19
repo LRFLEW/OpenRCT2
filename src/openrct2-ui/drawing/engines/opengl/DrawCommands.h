@@ -65,9 +65,10 @@ public:
 };
 
 struct DrawLineCommand {
-    uint8 colour;
     vec4i clip;
-    sint32 pos[4];
+    vec4i bounds;
+    uint32 colour;
+    sint32 depth;
 };
 
 // Per-instance data for images
@@ -81,6 +82,7 @@ struct DrawRectCommand {
     sint32 flags;
     uint32 colour;
     vec4i bounds;
+    sint32 depth;
 
     enum
     {
