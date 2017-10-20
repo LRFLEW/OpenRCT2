@@ -65,24 +65,24 @@ public:
 };
 
 struct DrawLineCommand {
-    vec4i clip;
-    vec4i bounds;
-    uint32 colour;
-    sint32 depth;
+    ivec4 clip;
+    ivec4 bounds;
+    GLuint colour;
+    GLint depth;
 };
 
 // Per-instance data for images
 struct DrawRectCommand {
-    vec4i clip;
-    sint32 texColourAtlas;
-    vec4f texColourBounds;
-    sint32 texMaskAtlas;
-    vec4f texMaskBounds;
-    vec3i palettes;
-    sint32 flags;
-    uint32 colour;
-    vec4i bounds;
-    sint32 depth;
+    ivec4 clip;
+    GLint texColourAtlas;
+    vec4 texColourBounds;
+    GLint texMaskAtlas;
+    vec4 texMaskBounds;
+    ivec3 palettes;
+    GLint flags;
+    GLuint colour;
+    ivec4 bounds;
+    GLint depth;
 
     enum
     {

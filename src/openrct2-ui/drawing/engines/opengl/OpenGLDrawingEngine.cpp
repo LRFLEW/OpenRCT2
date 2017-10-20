@@ -138,7 +138,7 @@ private:
 
 public:
     SDL_Color Palette[256];
-    vec4f     GLPalette[256];
+    vec4      GLPalette[256];
 
     OpenGLDrawingEngine(IUiContext * uiContext)
         : _uiContext(uiContext)
@@ -610,7 +610,7 @@ void OpenGLDrawingContext::DrawSprite(uint32 image, sint32 x, sint32 y, uint32 t
     auto texture = _textureCache->GetOrLoadImageTexture(image);
 
     int paletteCount;
-    vec3i palettes{};
+    ivec3 palettes{};
     bool special = false;
     if (image & IMAGE_TYPE_REMAP_2_PLUS)
     {
