@@ -31,16 +31,12 @@ private:
     
     GLuint _vbo;
     GLuint _vao;
-    
-    OpenGLFramebuffer * _fbo;
-    GLsizei _depth;
 
 public:
     CountTransparencyShader();
     ~CountTransparencyShader() override;
 
-    void SetScreenSize(sint32 width, sint32 height);
-    bool Draw(GLuint texture);
+    bool Draw(OpenGLFramebuffer &fbo);
 
 private:
     void GetLocations();

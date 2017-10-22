@@ -47,7 +47,6 @@ constexpr VDStruct VertexData[4] =
 
 CountTransparencyShader::CountTransparencyShader() : OpenGLShaderProgram("counttransparency")
 {
-    _fbo = nullptr;
     GetLocations();
     
     glGenBuffers(1, &_vbo);
@@ -75,35 +74,41 @@ CountTransparencyShader::~CountTransparencyShader()
 
 void CountTransparencyShader::GetLocations()
 {
+    uScreenSize         = GetUniformLocation("uScreenSize");
     uTexture            = GetUniformLocation("uTexture");
     
     vPosition           = GetAttributeLocation("vPosition");
     vTextureCoordinate  = GetAttributeLocation("vTextureCoordinate");
 }
 
-void CountTransparencyShader::SetScreenSize(sint32 width, sint32 height)
+bool CountTransparencyShader::Draw(OpenGLFramebuffer &fbo)
 {
-    if (_fbo) delete _fbo;
-    _fbo = new OpenGLFramebuffer(width, height, false, false);
-    _depth = std::max(floor_log2(width) - 1, floor_log2(height) - 1);
-}
-
-bool CountTransparencyShader::Draw(GLuint texture)
-{
-    assert(_fbo != nullptr);
-    
+    OpenGLFramebuffer *last = &fbo;
     Use();
-    _fbo->Bind();
     glBindVertexArray(_vao);
-    OpenGLAPI::SetTexture(0, GL_TEXTURE_2D, texture);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
-    GLuint out = _fbo->GetTexture();
+    while (last->GetWidth() > 1 || last->GetHeight() > 1)
+    {
+        sint32 width = (last->GetWidth() / 2) + (last->GetWidth() % 2);
+        sint32 height = (last->GetHeight() / 2) + (last->GetHeight() % 2);
+        OpenGLFramebuffer *next = new OpenGLFramebuffer(width, height, false);
+        
+        next->Bind();
+        OpenGLAPI::SetTexture(0, GL_TEXTURE_2D, last->GetTexture());
+        glUniform2i(uScreenSize, last->GetWidth(), last->GetHeight());
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        
+        if (last != &fbo) delete last;
+        last = next;
+    }
+    
+    GLuint out = last->GetTexture();
     glBindTexture(GL_TEXTURE_2D, out);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    GLfloat result[1];
-    glGetTexImage(GL_TEXTURE_2D, _depth, GL_RED, GL_FLOAT, result);
-    return result[0] != 0.0f;
+    uint8 result[1];
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, result);
+    
+    if (last != &fbo) delete last;
+    return result[0] != 0;
 }
 
 #endif /* DISABLE_OPENGL */

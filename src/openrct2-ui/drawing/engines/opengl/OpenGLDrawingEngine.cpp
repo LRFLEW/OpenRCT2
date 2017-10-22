@@ -422,9 +422,7 @@ void OpenGLDrawingContext::Resize(sint32 width, sint32 height)
 {
     _commandBuffers.lines.clear();
     _commandBuffers.rects.clear();
-
-    _countTransparencyShader->Use();
-    _countTransparencyShader->SetScreenSize(width, height);
+    
     _drawRectShader->Use();
     _drawRectShader->SetScreenSize(width, height);
     _drawLineShader->Use();

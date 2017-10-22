@@ -36,7 +36,7 @@ _countFramebuffer(1, 1, false, false)
 
 bool SwapFramebuffer::ApplyTransparency(ApplyTransparencyShader &applyShader, CountTransparencyShader &countShader, GLuint paletteTex)
 {
-    bool stuff = countShader.Draw(_transparentFramebuffer.GetTexture());
+    bool stuff = countShader.Draw(_transparentFramebuffer);
     
     if (stuff)
     {
