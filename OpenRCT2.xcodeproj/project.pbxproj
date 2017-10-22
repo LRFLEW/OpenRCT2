@@ -266,6 +266,7 @@
 		D4EC48E61C2637710024B507 /* g2.dat in Resources */ = {isa = PBXBuildFile; fileRef = D4EC48E31C2637710024B507 /* g2.dat */; };
 		D4EC48E71C2637710024B507 /* language in Resources */ = {isa = PBXBuildFile; fileRef = D4EC48E41C2637710024B507 /* language */; };
 		D4EC48E81C2637710024B507 /* title in Resources */ = {isa = PBXBuildFile; fileRef = D4EC48E51C2637710024B507 /* title */; };
+		D4F21BCA1F9C495700D561A3 /* CountTransparencyShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4F21BC81F9C495600D561A3 /* CountTransparencyShader.cpp */; };
 		F76C85B01EC4E88300FA49E2 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F76C83571EC4E7CC00FA49E2 /* Audio.cpp */; };
 		F76C85B41EC4E88300FA49E2 /* AudioMixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F76C835B1EC4E7CC00FA49E2 /* AudioMixer.cpp */; };
 		F76C85B71EC4E88300FA49E2 /* NullAudioSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F76C835E1EC4E7CC00FA49E2 /* NullAudioSource.cpp */; };
@@ -1035,6 +1036,8 @@
 		D4EC48E31C2637710024B507 /* g2.dat */ = {isa = PBXFileReference; lastKnownFileType = file; name = g2.dat; path = data/g2.dat; sourceTree = SOURCE_ROOT; };
 		D4EC48E41C2637710024B507 /* language */ = {isa = PBXFileReference; lastKnownFileType = folder; name = language; path = data/language; sourceTree = SOURCE_ROOT; };
 		D4EC48E51C2637710024B507 /* title */ = {isa = PBXFileReference; lastKnownFileType = folder; name = title; path = data/title; sourceTree = SOURCE_ROOT; };
+		D4F21BC81F9C495600D561A3 /* CountTransparencyShader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CountTransparencyShader.cpp; sourceTree = "<group>"; };
+		D4F21BC91F9C495700D561A3 /* CountTransparencyShader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CountTransparencyShader.h; sourceTree = "<group>"; };
 		F74789541EEDEA0D009E50E7 /* Input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Input.h; sourceTree = "<group>"; };
 		F76C809A1EC4D9FA00FA49E2 /* libopenrct2.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libopenrct2.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F76C83571EC4E7CC00FA49E2 /* Audio.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Audio.cpp; sourceTree = "<group>"; };
@@ -2665,6 +2668,8 @@
 				D45E09151F99CF2F00854B2B /* ApplyTransparencyShader.h */,
 				F76C85911EC4E82600FA49E2 /* CopyFramebufferShader.cpp */,
 				F76C85921EC4E82600FA49E2 /* CopyFramebufferShader.h */,
+				D4F21BC81F9C495600D561A3 /* CountTransparencyShader.cpp */,
+				D4F21BC91F9C495700D561A3 /* CountTransparencyShader.h */,
 				F76C85931EC4E82600FA49E2 /* DrawCommands.h */,
 				F76C85961EC4E82600FA49E2 /* DrawLineShader.cpp */,
 				F76C85971EC4E82600FA49E2 /* DrawLineShader.h */,
@@ -3247,6 +3252,7 @@
 				4C93F1421F8B744400A9330D /* InvertedHairpinCoaster.cpp in Sources */,
 				C666EE731F37ACB10061AA04 /* MusicCredits.cpp in Sources */,
 				4C93F1511F8B744400A9330D /* StandUpRollerCoaster.cpp in Sources */,
+				D4F21BCA1F9C495700D561A3 /* CountTransparencyShader.cpp in Sources */,
 				4C93F18C1F8B747A00A9330D /* LaunchedFreefall.cpp in Sources */,
 				4C93F1BB1F8E185600A9330D /* Finance.cpp in Sources */,
 				4C93F19A1F8B748200A9330D /* Lift.cpp in Sources */,

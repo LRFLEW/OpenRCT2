@@ -19,6 +19,7 @@
 #include <openrct2/common.h>
 #include "OpenGLAPI.h"
 #include "ApplyTransparencyShader.h"
+#include "CountTransparencyShader.h"
 
 class CopyFramebufferShader;
 class OpenGLFramebuffer;
@@ -41,6 +42,7 @@ private:
     OpenGLFramebuffer   _transparentFramebuffer;
     OpenGLFramebuffer   _mixFramebuffer;
     GLuint              _backDepth;
+    OpenGLFramebuffer   _countFramebuffer;
 
 public:
     SwapFramebuffer(sint32 width, sint32 height);
@@ -50,6 +52,6 @@ public:
     void BindOpaque() { _opaqueFramebuffer.Bind(); }
     void BindTransparent() { _transparentFramebuffer.Bind(); }
     
-    bool ApplyTransparency(ApplyTransparencyShader &shader, GLuint paletteTex, rct_drawpixelinfo &dpi);
+    bool ApplyTransparency(ApplyTransparencyShader &applyShader, CountTransparencyShader &countShader, GLuint paletteTex);
     void Clear();
 };

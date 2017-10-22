@@ -31,14 +31,21 @@ OpenGLFramebuffer::OpenGLFramebuffer(SDL_Window * window)
     SDL_GetWindowSize(window, &_width, &_height);
 }
 
-OpenGLFramebuffer::OpenGLFramebuffer(sint32 width, sint32 height, bool depth)
+OpenGLFramebuffer::OpenGLFramebuffer(sint32 width, sint32 height, bool depth, bool integer)
 {
     _width = width;
     _height = height;
 
     glGenTextures(1, &_texture);
     glBindTexture(GL_TEXTURE_2D, _texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, nullptr);
+    if (integer)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, nullptr);
+    }
+    else
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+    }
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     
@@ -88,7 +95,6 @@ void OpenGLFramebuffer::GetPixels(rct_drawpixelinfo &dpi) const
     assert(dpi.width == _width && dpi.height == _height);
     
     Bind();
-    
     uint8 * pixels = Memory::Allocate<uint8>(_width * _height);
     glReadPixels(0, 0, _width, _height, GL_RED_INTEGER, GL_UNSIGNED_BYTE, pixels);
 
@@ -102,6 +108,14 @@ void OpenGLFramebuffer::GetPixels(rct_drawpixelinfo &dpi) const
         dst += dpi.width + dpi.pitch;
     }
     Memory::Free(pixels);
+}
+
+bool OpenGLFramebuffer::CountGet() const
+{
+    Bind();
+    GLfloat pixels[1];
+    glReadPixels(0, 0, 1, 1, GL_RED, GL_FLOAT, pixels);
+    return pixels[0] != 0.0f;
 }
 
 void OpenGLFramebuffer::SwapColourBuffer(OpenGLFramebuffer &other)

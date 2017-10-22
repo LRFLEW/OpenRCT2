@@ -68,6 +68,7 @@ private:
     rct_drawpixelinfo *     _dpi    = nullptr;
 
     ApplyTransparencyShader *   _applyTransparencyShader    = nullptr;
+    CountTransparencyShader *   _countTransparencyShader    = nullptr;
     DrawLineShader *            _drawLineShader             = nullptr;
     DrawRectShader *            _drawRectShader             = nullptr;
     SwapFramebuffer *           _swapFramebuffer            = nullptr;
@@ -395,6 +396,7 @@ OpenGLDrawingContext::OpenGLDrawingContext(OpenGLDrawingEngine * engine)
 OpenGLDrawingContext::~OpenGLDrawingContext()
 {
     delete _applyTransparencyShader;
+    delete _countTransparencyShader;
     delete _drawLineShader;
     delete _drawRectShader;
     delete _swapFramebuffer;
@@ -411,6 +413,7 @@ void OpenGLDrawingContext::Initialise()
 {
     _textureCache = new TextureCache();
     _applyTransparencyShader = new ApplyTransparencyShader();
+    _countTransparencyShader = new CountTransparencyShader();
     _drawRectShader = new DrawRectShader();
     _drawLineShader = new DrawLineShader();
 }
@@ -420,6 +423,8 @@ void OpenGLDrawingContext::Resize(sint32 width, sint32 height)
     _commandBuffers.lines.clear();
     _commandBuffers.rects.clear();
 
+    _countTransparencyShader->Use();
+    _countTransparencyShader->SetScreenSize(width, height);
     _drawRectShader->Use();
     _drawRectShader->SetScreenSize(width, height);
     _drawLineShader->Use();
@@ -863,7 +868,7 @@ void OpenGLDrawingContext::HandleTransparency()
         
         
         _drawRectShader->DrawInstances(_commandBuffers.transparent);
-        hadTransparency = _swapFramebuffer->ApplyTransparency(*_applyTransparencyShader, _textureCache->GetPaletteTexture(), dpi);
+        hadTransparency = _swapFramebuffer->ApplyTransparency(*_applyTransparencyShader, *_countTransparencyShader, _textureCache->GetPaletteTexture());
         
         ++count;
     }

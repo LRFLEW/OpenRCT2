@@ -35,7 +35,7 @@ private:
 
 public:
     explicit OpenGLFramebuffer(SDL_Window * window);
-    OpenGLFramebuffer(sint32 width, sint32 height, bool depth = true);
+    OpenGLFramebuffer(sint32 width, sint32 height, bool depth = true, bool integer = true);
     ~OpenGLFramebuffer();
     
     OpenGLFramebuffer(const OpenGLFramebuffer &) = delete;
@@ -50,6 +50,7 @@ public:
     void BindDraw() const;
     void BindRead() const;
     void GetPixels(rct_drawpixelinfo &dpi) const;
+    bool CountGet() const;
     
     void SwapColourBuffer(OpenGLFramebuffer &other);
     GLuint SwapDepthTexture(GLuint depth);

@@ -27,30 +27,30 @@ constexpr GLuint indexValue[4] = { 0, 0, 0, 0 };
 SwapFramebuffer::SwapFramebuffer(sint32 width, sint32 height) :
 _width(width), _height(height), _hasMixed(false), _opaqueFramebuffer(width, height),
 _transparentFramebuffer(width, height), _mixFramebuffer(width, height, false),
-_backDepth(OpenGLFramebuffer::CreateDepthTexture(width, height))
+_backDepth(OpenGLFramebuffer::CreateDepthTexture(width, height)),
+_countFramebuffer(1, 1, false, false)
 {
     _transparentFramebuffer.Bind();
     glClearBufferfv(GL_DEPTH, 0, depthValueTransparent);
 }
 
-bool SwapFramebuffer::ApplyTransparency(ApplyTransparencyShader &shader, GLuint paletteTex, rct_drawpixelinfo &dpi)
+bool SwapFramebuffer::ApplyTransparency(ApplyTransparencyShader &applyShader, CountTransparencyShader &countShader, GLuint paletteTex)
 {
-    _transparentFramebuffer.GetPixels(dpi);
-    bool hadWork = std::any_of(dpi.bits,
-                               dpi.bits + ((dpi.width + dpi.pitch) * dpi.height),
-                               [](uint8 v) -> bool { return v != 0; });
+    _countFramebuffer.Bind();
+    glClearBufferfv(GL_COLOR, 0, depthValueTransparent);
+    countShader.Draw(_transparentFramebuffer.GetTexture());
     
     _mixFramebuffer.Bind();
     glDisable(GL_DEPTH_TEST);
-    shader.Use();
-    shader.SetTextures(
+    applyShader.Use();
+    applyShader.SetTextures(
                        _opaqueFramebuffer.GetTexture(),
                        _opaqueFramebuffer.GetDepthTexture(),
                        _transparentFramebuffer.GetTexture(),
                        _transparentFramebuffer.GetDepthTexture(),
                        paletteTex
                        );
-    shader.Draw();
+    applyShader.Draw();
     
     _backDepth = _transparentFramebuffer.SwapDepthTexture(_backDepth);
     
@@ -63,7 +63,7 @@ bool SwapFramebuffer::ApplyTransparency(ApplyTransparencyShader &shader, GLuint 
     //Change binding to guaruntee no undefined behavior
     _opaqueFramebuffer.Bind();
     
-    return hadWork;
+    return _countFramebuffer.CountGet();
 }
 
 void SwapFramebuffer::Clear()
