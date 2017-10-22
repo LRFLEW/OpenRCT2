@@ -36,34 +36,35 @@ _countFramebuffer(1, 1, false, false)
 
 bool SwapFramebuffer::ApplyTransparency(ApplyTransparencyShader &applyShader, CountTransparencyShader &countShader, GLuint paletteTex)
 {
-    _countFramebuffer.Bind();
-    glClearBufferfv(GL_COLOR, 0, depthValueTransparent);
-    countShader.Draw(_transparentFramebuffer.GetTexture());
+    bool stuff = countShader.Draw(_transparentFramebuffer.GetTexture());
     
-    _mixFramebuffer.Bind();
-    glDisable(GL_DEPTH_TEST);
-    applyShader.Use();
-    applyShader.SetTextures(
-                       _opaqueFramebuffer.GetTexture(),
-                       _opaqueFramebuffer.GetDepthTexture(),
-                       _transparentFramebuffer.GetTexture(),
-                       _transparentFramebuffer.GetDepthTexture(),
-                       paletteTex
-                       );
-    applyShader.Draw();
+    if (stuff)
+    {
+        _mixFramebuffer.Bind();
+        glDisable(GL_DEPTH_TEST);
+        applyShader.Use();
+        applyShader.SetTextures(
+                                _opaqueFramebuffer.GetTexture(),
+                                _opaqueFramebuffer.GetDepthTexture(),
+                                _transparentFramebuffer.GetTexture(),
+                                _transparentFramebuffer.GetDepthTexture(),
+                                paletteTex
+                                );
+        applyShader.Draw();
+        
+        _backDepth = _transparentFramebuffer.SwapDepthTexture(_backDepth);
+        
+        // Clear transparency buffers
+        _transparentFramebuffer.Bind();
+        glClearBufferuiv(GL_COLOR, 0, indexValue);
+        glClearBufferfv(GL_DEPTH, 0, depthValueTransparent);
+        
+        _opaqueFramebuffer.SwapColourBuffer(_mixFramebuffer);
+        //Change binding to guaruntee no undefined behavior
+        _opaqueFramebuffer.Bind();
+    }
     
-    _backDepth = _transparentFramebuffer.SwapDepthTexture(_backDepth);
-    
-    // Clear transparency buffers
-    _transparentFramebuffer.Bind();
-    glClearBufferuiv(GL_COLOR, 0, indexValue);
-    glClearBufferfv(GL_DEPTH, 0, depthValueTransparent);
-    
-    _opaqueFramebuffer.SwapColourBuffer(_mixFramebuffer);
-    //Change binding to guaruntee no undefined behavior
-    _opaqueFramebuffer.Bind();
-    
-    return _countFramebuffer.CountGet();
+    return stuff;
 }
 
 void SwapFramebuffer::Clear()

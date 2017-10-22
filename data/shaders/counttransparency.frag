@@ -8,5 +8,5 @@ out float oColour;
 
 void main()
 {
-    oColour = sign(texture(uTexture, fTextureCoordinate).r);
+    oColour = float(texture(uTexture, fTextureCoordinate).r);
 }

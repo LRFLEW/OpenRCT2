@@ -18,6 +18,7 @@
 
 #include "GLSLTypes.h"
 #include "OpenGLShaderProgram.h"
+#include "OpenGLFramebuffer.h"
 
 class CountTransparencyShader final : public OpenGLShaderProgram
 {
@@ -25,16 +26,21 @@ private:
     GLuint  uScreenSize;
     GLuint  uTexture;
     
+    GLuint vPosition;
+    GLuint vTextureCoordinate;
+    
+    GLuint _vbo;
     GLuint _vao;
     
-    GLsizei instanceCount;
+    OpenGLFramebuffer * _fbo;
+    GLsizei _depth;
 
 public:
     CountTransparencyShader();
     ~CountTransparencyShader() override;
 
     void SetScreenSize(sint32 width, sint32 height);
-    void Draw(GLuint texture);
+    bool Draw(GLuint texture);
 
 private:
     void GetLocations();
