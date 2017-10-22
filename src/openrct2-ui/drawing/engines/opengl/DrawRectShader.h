@@ -28,6 +28,9 @@ private:
     GLuint uScreenSize;
     GLuint uTexture;
     GLuint uPaletteTex;
+    
+    GLuint uPeelingTex;
+    GLuint uPeeling;
 
     GLuint vVertMat;
     GLuint vVertVec;
@@ -52,6 +55,9 @@ public:
     ~DrawRectShader() override;
 
     void SetScreenSize(sint32 width, sint32 height);
+    void EnablePeeling(GLuint peelingTex);
+    void DisablePeeling();
+    
     void DrawInstances(const RectCommandBatch& instances);
 
 private:

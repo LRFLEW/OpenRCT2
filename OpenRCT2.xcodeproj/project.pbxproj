@@ -3812,6 +3812,7 @@
 					"$(SRCROOT)/libxc/include/libpng16",
 					"$(SRCROOT)/libxc/include/openssl",
 					"$(SRCROOT)/src/",
+					/usr/local/opt/boost/include,
 				);
 				INFOPLIST_FILE = "$(DERIVED_FILE_DIR)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
@@ -3849,6 +3850,7 @@
 					"$(SRCROOT)/libxc/include/libpng16",
 					"$(SRCROOT)/libxc/include/openssl",
 					"$(SRCROOT)/src/",
+					/usr/local/opt/boost/include,
 				);
 				INFOPLIST_FILE = "$(DERIVED_FILE_DIR)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";

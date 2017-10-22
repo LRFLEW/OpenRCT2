@@ -20,6 +20,9 @@
 #include <vector>
 #include <SDL.h>
 
+#include <boost/function_output_iterator.hpp>
+#include <boost/geometry.hpp>
+
 #include <openrct2/config/Config.h>
 #include <openrct2/core/Console.hpp>
 #include <openrct2/core/Exception.hpp>
@@ -95,7 +98,6 @@ public:
 
     IDrawingEngine * GetEngine() override;
     TextureCache * GetTextureCache() const { return _textureCache; }
-    SwapFramebuffer * GetSwapFramebuffer() const { return _swapFramebuffer; }
     const OpenGLFramebuffer & GetFinalFramebuffer() const { return _swapFramebuffer->GetFinalFramebuffer(); }
 
     void Initialise();
@@ -116,6 +118,7 @@ public:
 
     void FlushLines(LineCommandBatch &batch);
     void FlushRectangles(RectCommandBatch &batch);
+    void HandleTransparency();
 
     void SetDPI(rct_drawpixelinfo * dpi);
 };
@@ -611,8 +614,9 @@ void OpenGLDrawingContext::DrawSprite(uint32 image, sint32 x, sint32 y, uint32 t
     else if ((image & IMAGE_TYPE_REMAP) || (image & IMAGE_TYPE_TRANSPARENT))
     {
         paletteCount = 1;
-        palettes.x = TextureCache::PaletteToY((image >> 19) & 0xFF);
-        if (palettes.x == PALETTE_WATER)
+        uint32 palette = (image >> 19) & 0xFF;
+        palettes.x = TextureCache::PaletteToY(palette);
+        if (palette == PALETTE_WATER)
         {
             special = true;
         }
@@ -805,12 +809,16 @@ void OpenGLDrawingContext::DrawGlyph(uint32 image, sint32 x, sint32 y, uint8 * p
 void OpenGLDrawingContext::FlushCommandBuffers()
 {
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    
     _swapFramebuffer->BindOpaque();
+    _drawRectShader->Use();
+    _drawRectShader->DisablePeeling();
+    
     FlushLines(_commandBuffers.lines);
     FlushRectangles(_commandBuffers.rects);
-    _swapFramebuffer->BindTransparent();
-    FlushRectangles(_commandBuffers.transparent);
-    _swapFramebuffer->ApplyTransparency(*_applyTransparencyShader, _textureCache->GetPaletteTexture());
+    
+    HandleTransparency();
 }
 
 void OpenGLDrawingContext::FlushLines(LineCommandBatch &batch)
@@ -834,6 +842,56 @@ void OpenGLDrawingContext::FlushRectangles(RectCommandBatch &batch)
     _drawRectShader->DrawInstances(batch);
 
     batch.clear();
+}
+
+void OpenGLDrawingContext::HandleTransparency()
+{
+    if (_commandBuffers.transparent.empty())
+    {
+        return;
+    }
+    
+    using point = boost::geometry::model::point<GLint, 2, boost::geometry::cs::cartesian>;
+    using box = boost::geometry::model::box<point>;
+    using rtree = boost::geometry::index::rtree<box, boost::geometry::index::quadratic<16>>;
+    const auto intersects = boost::geometry::index::intersects<box>;
+    
+    rtree tree;
+    RectCommandBatch &transparent = _commandBuffers.transparent;
+    
+    std::size_t max_intersects = 0;
+    for (const DrawRectCommand &command : transparent)
+    {
+        box bounds{ { command.bounds.x, command.bounds.y }, { command.bounds.z, command.bounds.w } };
+        
+        std::size_t count = 0;
+        tree.query(intersects(bounds), boost::make_function_output_iterator(
+                      [&count](rtree::value_type const& val) { ++count; })
+                  );
+        max_intersects = std::max(max_intersects, count);
+        tree.insert(bounds);
+    }
+    log_info("Transparent: %d, Iterations: %d", transparent.size(), max_intersects);
+    
+    for (std::size_t i=0; i < max_intersects; ++i)
+    {
+        _swapFramebuffer->BindTransparent();
+        
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_GREATER);
+        _drawRectShader->Use();
+        
+        if (i > 0)
+        {
+            _drawRectShader->EnablePeeling(_swapFramebuffer->GetBackDepthTexture());
+        }
+        
+        
+        _drawRectShader->DrawInstances(transparent);
+        _swapFramebuffer->ApplyTransparency(*_applyTransparencyShader, _textureCache->GetPaletteTexture());
+    }
+    
+    transparent.clear();
 }
 
 void OpenGLDrawingContext::SetDPI(rct_drawpixelinfo * dpi)

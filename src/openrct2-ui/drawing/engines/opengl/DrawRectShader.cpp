@@ -93,6 +93,9 @@ DrawRectShader::DrawRectShader() : OpenGLShaderProgram("drawrect")
     Use();
     glUniform1i(uTexture, 0);
     glUniform1i(uPaletteTex, 1);
+    
+    glUniform1i(uPeelingTex, 2);
+    glUniform1i(uPeeling, 0);
 }
 
 DrawRectShader::~DrawRectShader()
@@ -107,6 +110,9 @@ void DrawRectShader::GetLocations()
     uScreenSize         = GetUniformLocation("uScreenSize");
     uTexture            = GetUniformLocation("uTexture");
     uPaletteTex         = GetUniformLocation("uPaletteTex");
+    
+    uPeelingTex         = GetUniformLocation("uPeelingTex");
+    uPeeling            = GetUniformLocation("uPeeling");
     
     vClip               = GetAttributeLocation("vClip");
     vTexColourAtlas     = GetAttributeLocation("vTexColourAtlas");
@@ -126,6 +132,17 @@ void DrawRectShader::GetLocations()
 void DrawRectShader::SetScreenSize(sint32 width, sint32 height)
 {
     glUniform2i(uScreenSize, width, height);
+}
+
+void DrawRectShader::EnablePeeling(GLuint peelingTex)
+{
+    OpenGLAPI::SetTexture(2, GL_TEXTURE_2D, peelingTex);
+    glUniform1i(uPeeling, 1);
+}
+
+void DrawRectShader::DisablePeeling()
+{
+    glUniform1i(uPeeling, 0);
 }
 
 void DrawRectShader::DrawInstances(const RectCommandBatch& instances)
