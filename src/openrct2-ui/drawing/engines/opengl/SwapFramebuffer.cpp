@@ -33,8 +33,13 @@ _backDepth(OpenGLFramebuffer::CreateDepthTexture(width, height))
     glClearBufferfv(GL_DEPTH, 0, depthValueTransparent);
 }
 
-void SwapFramebuffer::ApplyTransparency(ApplyTransparencyShader &shader, GLuint paletteTex)
+bool SwapFramebuffer::ApplyTransparency(ApplyTransparencyShader &shader, GLuint paletteTex, rct_drawpixelinfo &dpi)
 {
+    _transparentFramebuffer.GetPixels(dpi);
+    bool hadWork = std::any_of(dpi.bits,
+                               dpi.bits + ((dpi.width + dpi.pitch) * dpi.height),
+                               [](uint8 v) -> bool { return v != 0; });
+    
     _mixFramebuffer.Bind();
     glDisable(GL_DEPTH_TEST);
     shader.Use();
@@ -57,6 +62,8 @@ void SwapFramebuffer::ApplyTransparency(ApplyTransparencyShader &shader, GLuint 
     _opaqueFramebuffer.SwapColourBuffer(_mixFramebuffer);
     //Change binding to guaruntee no undefined behavior
     _opaqueFramebuffer.Bind();
+    
+    return hadWork;
 }
 
 void SwapFramebuffer::Clear()

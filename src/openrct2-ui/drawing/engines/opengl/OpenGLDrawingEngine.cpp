@@ -20,9 +20,6 @@
 #include <vector>
 #include <SDL.h>
 
-#include <boost/function_output_iterator.hpp>
-#include <boost/geometry.hpp>
-
 #include <openrct2/config/Config.h>
 #include <openrct2/core/Console.hpp>
 #include <openrct2/core/Exception.hpp>
@@ -846,34 +843,12 @@ void OpenGLDrawingContext::FlushRectangles(RectCommandBatch &batch)
 
 void OpenGLDrawingContext::HandleTransparency()
 {
-    if (_commandBuffers.transparent.empty())
-    {
-        return;
-    }
+    if (_commandBuffers.transparent.empty()) return;
     
-    using point = boost::geometry::model::point<GLint, 2, boost::geometry::cs::cartesian>;
-    using box = boost::geometry::model::box<point>;
-    using rtree = boost::geometry::index::rtree<box, boost::geometry::index::quadratic<16>>;
-    const auto intersects = boost::geometry::index::intersects<box>;
-    
-    rtree tree;
-    RectCommandBatch &transparent = _commandBuffers.transparent;
-    
-    std::size_t max_intersects = 0;
-    for (const DrawRectCommand &command : transparent)
-    {
-        box bounds{ { command.bounds.x, command.bounds.y }, { command.bounds.z, command.bounds.w } };
-        
-        std::size_t count = 0;
-        tree.query(intersects(bounds), boost::make_function_output_iterator(
-                      [&count](rtree::value_type const& val) { ++count; })
-                  );
-        max_intersects = std::max(max_intersects, count);
-        tree.insert(bounds);
-    }
-    log_info("Transparent: %d, Iterations: %d", transparent.size(), max_intersects);
-    
-    for (std::size_t i=0; i < max_intersects; ++i)
+    bool hadTransparency = false;
+    rct_drawpixelinfo &dpi = *_engine->GetDPI();
+    std::size_t count = 0;
+    do
     {
         _swapFramebuffer->BindTransparent();
         
@@ -881,17 +856,21 @@ void OpenGLDrawingContext::HandleTransparency()
         glDepthFunc(GL_GREATER);
         _drawRectShader->Use();
         
-        if (i > 0)
+        if (hadTransparency)
         {
             _drawRectShader->EnablePeeling(_swapFramebuffer->GetBackDepthTexture());
         }
         
         
-        _drawRectShader->DrawInstances(transparent);
-        _swapFramebuffer->ApplyTransparency(*_applyTransparencyShader, _textureCache->GetPaletteTexture());
+        _drawRectShader->DrawInstances(_commandBuffers.transparent);
+        hadTransparency = _swapFramebuffer->ApplyTransparency(*_applyTransparencyShader, _textureCache->GetPaletteTexture(), dpi);
+        
+        ++count;
     }
+    while (hadTransparency);
+    log_info("DP: %d", count);
     
-    transparent.clear();
+    _commandBuffers.transparent.clear();
 }
 
 void OpenGLDrawingContext::SetDPI(rct_drawpixelinfo * dpi)

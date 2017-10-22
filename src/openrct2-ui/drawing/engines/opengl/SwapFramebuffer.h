@@ -50,6 +50,6 @@ public:
     void BindOpaque() { _opaqueFramebuffer.Bind(); }
     void BindTransparent() { _transparentFramebuffer.Bind(); }
     
-    void ApplyTransparency(ApplyTransparencyShader &shader, GLuint paletteTex);
+    bool ApplyTransparency(ApplyTransparencyShader &shader, GLuint paletteTex, rct_drawpixelinfo &dpi);
     void Clear();
 };

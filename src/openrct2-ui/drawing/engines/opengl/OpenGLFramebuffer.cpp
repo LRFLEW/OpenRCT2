@@ -87,6 +87,8 @@ void OpenGLFramebuffer::GetPixels(rct_drawpixelinfo &dpi) const
 {
     assert(dpi.width == _width && dpi.height == _height);
     
+    Bind();
+    
     uint8 * pixels = Memory::Allocate<uint8>(_width * _height);
     glReadPixels(0, 0, _width, _height, GL_RED_INTEGER, GL_UNSIGNED_BYTE, pixels);
 
