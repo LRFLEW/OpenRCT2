@@ -36,6 +36,7 @@
     #include <openrct2/drawing/LightFX.h>
     #include <openrct2/drawing/Weather.h>
     #include <openrct2/interface/Screenshot.h>
+    #include <openrct2/interface/Viewport.h>
     #include <openrct2/ui/UiContext.h>
     #include <openrct2/world/Climate.h>
 
@@ -366,11 +367,13 @@ public:
 
     void PaintWindows() override
     {
-        if (ClimateHasWeatherEffect())
+        // OpenGL doesn't support restoring pixels, always redraw.
+        // TODO: Render the weather to a texture and use that instead.
+        // Additionally, the data-dependency cost of dirty drawing is less beneficial
+        // for more dynamic scenes with less tiles, so disable it at close zoom levels.
+        if (ClimateHasWeatherEffect() || WindowGetMain()->viewport->zoom < ZoomLevel{ 2 })
         {
             WindowUpdateAllViewports();
-            // OpenGL doesn't support restoring pixels, always redraw.
-            // TODO: Render the weather to a texture and use that instead.
             WindowDrawAll(_mainRT, 0, 0, static_cast<int32_t>(_width), static_cast<int32_t>(_height));
         }
         else
